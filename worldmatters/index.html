@@ -32,6 +32,8 @@ header nav a:hover{color:var(--fg)}
 /* projects: each tile plays its film while the pointer is on it */
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(18px,2.4vw,34px);padding-bottom:clamp(80px,12vh,140px)}
 .pj{display:block;cursor:pointer}
+.pj.wide{grid-column:1/-1}
+.pj.wide .fr{aspect-ratio:21/9}
 .pj .fr{position:relative;aspect-ratio:16/9;overflow:hidden;background:#1a1a1b}
 .pj img,.pj video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;display:block}
 .pj img{filter:grayscale(.35) brightness(.82);transition:filter .6s,transform 1.4s cubic-bezier(.2,.7,.2,1)}
@@ -82,12 +84,13 @@ footer .wrap{display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px;
   </section>
 
   <section class="grid" id="work" aria-label="Projects">
-    <a class="pj rv" href="https://leoshakeacct.github.io/realestate/" target="_blank" rel="noopener" data-v="media/lumen.mp4"><div class="fr"><img src="media/lumen.jpg" alt="Lumen Residences at golden hour"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">01</span>Lumen Residences</h2><span class="pl">Lisbon</span></div></a>
-    <a class="pj rv" href="https://leoshakeacct.github.io/dubai/" target="_blank" rel="noopener" data-v="media/noor.mp4"><div class="fr"><img src="media/noor.jpg" alt="Villa Noor from the beach"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">02</span>Villa Noor</h2><span class="pl">Palm Jumeirah, Dubai</span></div></a>
-    <a class="pj rv" href="https://leoshakeacct.github.io/monaco/" target="_blank" rel="noopener" data-v="media/belvedere.mp4"><div class="fr"><img src="media/belvedere.jpg" alt="Le Belvédère above Port Hercule"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">03</span>Le Belvédère</h2><span class="pl">Monaco</span></div></a>
-    <a class="pj rv" href="https://leoshakeacct.github.io/dragonwood/" target="_blank" rel="noopener" data-v="media/origami.mp4"><div class="fr"><img src="media/origami.jpg" alt="The Origami House at dusk"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">04</span>The Origami House</h2><span class="pl">Weston, Connecticut</span></div></a>
-    <a class="pj rv" href="https://leoshakeacct.github.io/nido/" target="_blank" rel="noopener" data-v="media/nido.mp4"><div class="fr"><img src="media/nido.jpg" alt="El Nido de Santa Fe from above"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">05</span>El Nido de Santa Fe</h2><span class="pl">Antioquia, Colombia</span></div></a>
-    <a class="pj rv" href="https://leoshakeacct.github.io/girona/" target="_blank" rel="noopener" data-v="media/girona.mp4"><div class="fr"><img src="media/girona.jpg" alt="Oasis de Girona at golden hour"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">06</span>Girona</h2><span class="pl">Medellín, Colombia</span></div></a>
+    <a class="pj rv wide" href="https://leoshakeacct.github.io/casamirador/" target="_blank" rel="noopener" data-v="media/mirador.mp4"><div class="fr"><img src="media/mirador.jpg" alt="Casa Mirador at sunset from the driveway"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">01</span>Casa Mirador</h2><span class="pl">Flythrough · floor plans</span></div></a>
+    <a class="pj rv" href="https://leoshakeacct.github.io/realestate/" target="_blank" rel="noopener" data-v="media/lumen.mp4"><div class="fr"><img src="media/lumen.jpg" alt="Lumen Residences at golden hour"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">02</span>Lumen Residences</h2><span class="pl">Lisbon</span></div></a>
+    <a class="pj rv" href="https://leoshakeacct.github.io/dubai/" target="_blank" rel="noopener" data-v="media/noor.mp4"><div class="fr"><img src="media/noor.jpg" alt="Villa Noor from the beach"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">03</span>Villa Noor</h2><span class="pl">Palm Jumeirah, Dubai</span></div></a>
+    <a class="pj rv" href="https://leoshakeacct.github.io/monaco/" target="_blank" rel="noopener" data-v="media/belvedere.mp4"><div class="fr"><img src="media/belvedere.jpg" alt="Le Belvédère above Port Hercule"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">04</span>Le Belvédère</h2><span class="pl">Monaco</span></div></a>
+    <a class="pj rv" href="https://leoshakeacct.github.io/dragonwood/" target="_blank" rel="noopener" data-v="media/origami.mp4"><div class="fr"><img src="media/origami.jpg" alt="The Origami House at dusk"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">05</span>The Origami House</h2><span class="pl">Weston, Connecticut</span></div></a>
+    <a class="pj rv" href="https://leoshakeacct.github.io/nido/" target="_blank" rel="noopener" data-v="media/nido.mp4"><div class="fr"><img src="media/nido.jpg" alt="El Nido de Santa Fe from above"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">06</span>El Nido de Santa Fe</h2><span class="pl">Antioquia, Colombia</span></div></a>
+    <a class="pj rv" href="https://leoshakeacct.github.io/girona/" target="_blank" rel="noopener" data-v="media/girona.mp4"><div class="fr"><img src="media/girona.jpg" alt="Oasis de Girona at golden hour"><span class="badge">Playing</span></div><div class="meta"><h2><span class="no">07</span>Girona</h2><span class="pl">Medellín, Colombia</span></div></a>
   </section>
 
   <section class="studio" id="studio">

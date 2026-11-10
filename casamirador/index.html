@@ -1,0 +1,356 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Casa Mirador: a two-storey villa around a double-height great room. Photoreal drone flythrough, 3D model walkthrough and floor plans by worldmatters.">
+<meta property="og:title" content="Casa Mirador · worldmatters">
+<meta property="og:image" content="poster.jpg">
+<link rel="icon" href="data:,">
+<title>Casa Mirador</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Italiana&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one sticky full-bleed stage the visitor scrolls through, then a quiet plan + facts section.
+   Deliberately single-theme: a dusk screening room for the film, warm stone and brass on charcoal. */
+:root {
+  --ink: #12110f;         /* page ground, warm charcoal */
+  --ink-2: #1c1a17;       /* raised surfaces */
+  --line: #3a352e;        /* hairlines */
+  --sand: #ece4d6;        /* primary text, travertine */
+  --sand-dim: #a89f90;    /* secondary text */
+  --brass: #c8a165;       /* the one accent */
+  --pool: #6fb6c2;        /* pool on the plan only */
+  --display: "Italiana", "Didot", "Bodoni 72", Georgia, serif;
+  --body: "Manrope", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--ink); }
+body { background: var(--ink); color: var(--sand); font: 400 16px/1.6 var(--body); margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--ink); }
+
+/* ---------- stage ---------- */
+.tour { position: relative; height: 620vh; }
+.stage { position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100vh - env(safe-area-inset-top, 0px)); height: calc(100svh - env(safe-area-inset-top, 0px)); overflow: hidden; background: #000; }
+.stage video, .stage .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.stage .poster { transition: opacity .6s; }
+.stage.ready .poster { opacity: 0; }
+.shade { position: absolute; inset: 0; pointer-events: none;
+  background: linear-gradient(to top, rgba(10,9,8,.9) 0%, rgba(10,9,8,.6) 30%, rgba(10,9,8,0) 62%),
+              linear-gradient(to bottom, rgba(10,9,8,.6) 0%, rgba(10,9,8,0) 22%); }
+.bar, .room, .intro { text-shadow: 0 1px 12px rgba(0,0,0,.55); }
+
+.bar { position: absolute; inset: 0 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding-block: 18px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+.brand { font: 400 22px/1 var(--display); letter-spacing: .06em; color: var(--sand); text-decoration: none; }
+.brand:hover { color: var(--brass); }
+.clock { font: 500 12px/1 var(--mono); color: var(--sand); letter-spacing: .08em; font-variant-numeric: tabular-nums; }
+
+.intro { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); right: max(24px, env(safe-area-inset-right, 0px)); bottom: 15%; max-width: 760px; transition: opacity .5s, transform .5s; }
+.intro h1 { font: 400 clamp(56px, 11vw, 150px)/.9 var(--display); margin: 0 0 18px; letter-spacing: .01em; text-wrap: balance; }
+.intro p { margin: 0; max-width: 46ch; color: var(--sand); font-size: 17px; }
+.intro .facts { margin-top: 14px; font: 500 12px/1.4 var(--mono); color: var(--brass); letter-spacing: .12em; text-transform: uppercase; }
+.cue { margin-top: 28px; display: inline-flex; align-items: center; gap: 10px; font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sand-dim); }
+.cue i { width: 1px; height: 34px; background: var(--sand-dim); transform-origin: top; animation: drip 1.8s ease-in-out infinite; }
+@keyframes drip { 0%{transform:scaleY(0)} 50%{transform:scaleY(1)} 100%{transform:scaleY(1);opacity:0} }
+.gone { opacity: 0; transform: translateY(-12px); pointer-events: none; }
+
+.room { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); bottom: 92px; right: 260px; max-width: 620px; transition: opacity .45s; }
+.room .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--brass); display: flex; gap: 14px; }
+.room h2 { font: 400 clamp(40px, 6.5vw, 84px)/1 var(--display); margin: 10px 0 10px; text-wrap: balance; }
+.room p { margin: 0; max-width: 44ch; color: var(--sand); }
+.room .dim { display: inline-block; margin-top: 10px; font: 500 13px/1 var(--mono); color: var(--sand); font-variant-numeric: tabular-nums; }
+
+.map { position: absolute; right: max(24px, env(safe-area-inset-right, 0px)); bottom: 92px; width: 210px; padding: 12px 12px 10px; background: rgba(18,17,15,.72); border: 1px solid var(--line); border-radius: 6px; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.map .lvl { display: flex; justify-content: space-between; font: 500 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sand-dim); margin-bottom: 8px; }
+.map .lvl b { color: var(--brass); font-weight: 500; }
+.map svg { display: block; width: 100%; height: auto; }
+
+.timeline { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); right: max(24px, env(safe-area-inset-right, 0px)); bottom: 40px; height: 22px; }
+.timeline .track { position: absolute; left: 0; right: 0; top: 10px; height: 1px; background: var(--line); }
+.timeline .fill { position: absolute; left: 0; top: 10px; height: 1px; background: var(--brass); width: 0; }
+.timeline button { position: absolute; top: 3px; width: 15px; height: 15px; margin-left: -7px; padding: 0; border: 0; background: none; cursor: pointer; }
+.timeline button::after { content: ""; position: absolute; left: 5px; top: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--sand-dim); transition: background .2s, transform .2s; }
+.timeline button.on::after { background: var(--brass); transform: scale(1.5); }
+.timeline button:focus-visible { outline: 1px solid var(--brass); outline-offset: 2px; border-radius: 50%; }
+.timeline button span { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 500 10.5px/1 var(--mono); letter-spacing: .08em; color: var(--sand); background: var(--ink-2); padding: 5px 7px; border-radius: 3px; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.timeline button:hover span, .timeline button:focus-visible span { opacity: 1; }
+
+/* ---------- after the tour ---------- */
+.after { padding-block: 96px 72px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1120px; margin: 0 auto; display: grid; gap: 56px; }
+.after h3 { font: 400 clamp(36px, 5vw, 60px)/1.05 var(--display); margin: 0; text-wrap: balance; }
+.lede { color: var(--sand-dim); max-width: 60ch; margin: 14px 0 0; }
+.specs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.specs div { padding: 18px 18px 18px 0; border-bottom: 1px solid var(--line); }
+.specs dt { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sand-dim); }
+.specs dd { margin: 10px 0 0; font: 400 30px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.plans { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px; }
+.plans figure { margin: 0; min-width: 0; }
+.plans figcaption { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--brass); margin-bottom: 14px; }
+.plans svg { width: 100%; height: auto; display: block; }
+.again { justify-self: start; font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); background: var(--brass); border: 0; border-radius: 3px; padding: 15px 20px; cursor: pointer; }
+.again:hover { background: var(--sand); }
+.again:focus-visible { outline: 2px solid var(--sand); outline-offset: 3px; }
+.dl { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.dl .again { text-decoration: none; display: inline-block; }
+.ghost { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sand); text-decoration: none; border: 1px solid var(--line); border-radius: 3px; padding: 14px 18px; }
+.ghost:hover { border-color: var(--brass); color: var(--brass); }
+.ghost:focus-visible { outline: 2px solid var(--sand); outline-offset: 3px; }
+video.model { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; background: #000; border: 1px solid var(--line); border-radius: 4px; }
+.note { font: 400 13px/1.6 var(--body); color: var(--sand-dim); border-top: 1px solid var(--line); padding-top: 20px; max-width: 70ch; }
+
+/* plan drawing */
+.r { fill: var(--ink-2); stroke: var(--sand-dim); stroke-width: .12; }
+.r.out { fill: none; stroke: var(--line); stroke-dasharray: .5 .4; }
+.r.void { fill: none; stroke: var(--sand-dim); stroke-dasharray: .6 .5; }
+.r.here { fill: rgba(200,161,101,.22); stroke: var(--brass); }
+.pool { fill: var(--pool); opacity: .55; }
+.shell { fill: none; stroke: var(--sand); stroke-width: .4; }
+.lbl { fill: var(--sand-dim); font: 500 1.05px var(--mono); text-anchor: middle; dominant-baseline: central; letter-spacing: .02em; }
+.dot { fill: var(--brass); }
+.cone { fill: var(--brass); opacity: .28; }
+
+@media (max-width: 720px) {
+  .tour { height: 560vh; }
+  .room { right: max(24px, env(safe-area-inset-right, 0px)); bottom: 84px; }
+  .map { width: 132px; top: 58px; bottom: auto; padding: 8px; }
+  .map .lvl { font-size: 9.5px; margin-bottom: 5px; }
+  .timeline button span { display: none; }
+  .specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .plans { grid-template-columns: minmax(0, 1fr); }
+  .clock { display: none; }
+}
+@media (prefers-reduced-motion: reduce) { .cue i { animation: none; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<section class="tour" id="tour" aria-label="Flythrough of Casa Mirador">
+  <div class="stage" id="stage">
+    <img class="poster" src="poster.jpg" alt="Street view of Casa Mirador at golden hour">
+    <video id="film" src="flythrough.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+    <div class="shade"></div>
+
+    <div class="bar">
+      <a class="brand" href="https://worldmatters.shakeapp.today/">worldmatters</a>
+      <div class="clock" id="clock">00:00 / 00:17</div>
+    </div>
+
+    <div class="intro" id="intro">
+      <h1>Casa Mirador</h1>
+      <p>A two-storey villa around a double-height great room, opening south onto the pool. Scroll and the camera flies you in through the front door.</p>
+      <div class="facts">5 bedrooms · 1,200 m² · 30 × 20 m plot footprint</div>
+      <div class="cue"><i></i>Scroll to enter</div>
+    </div>
+
+    <div class="room gone" id="room" aria-live="polite">
+      <div class="eyebrow"><span id="roomNo">01</span><span id="roomFloor">Ground floor</span></div>
+      <h2 id="roomName">Arrival</h2>
+      <p id="roomText"></p>
+      <span class="dim" id="roomDim"></span>
+    </div>
+
+    <div class="map" aria-hidden="true">
+      <div class="lvl"><span>Plan</span><b id="mapLevel">Ground</b></div>
+      <svg id="mini" viewBox="-2 -3 34 37"></svg>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <div class="track"></div><div class="fill" id="fill"></div>
+    </div>
+  </div>
+</section>
+
+<section class="after">
+  <div class="wrap">
+    <div>
+      <h3>The house, on paper</h3>
+      <p class="lede">Everything you just flew through, drawn to scale. Social rooms open onto the pool on the south side; bedrooms sit upstairs, each with its own bath.</p>
+    </div>
+    <dl class="specs">
+      <div><dt>Built area</dt><dd>1,200 m²</dd></div>
+      <div><dt>Bedrooms</dt><dd>5, all ensuite</dd></div>
+      <div><dt>Great room</dt><dd>17 × 12 m</dd></div>
+      <div><dt>Pool</dt><dd>13 × 5.5 m</dd></div>
+      <div><dt>Ceiling, great room</dt><dd>7 m</dd></div>
+      <div><dt>Garage</dt><dd>3 cars</dd></div>
+      <div><dt>Footprint</dt><dd>30 × 20 m</dd></div>
+      <div><dt>Floors</dt><dd>2</dd></div>
+    </dl>
+    <div class="plans">
+      <figure><figcaption>Ground floor</figcaption><svg id="planG" viewBox="-1 -2 32 36" role="img" aria-label="Ground floor plan"></svg></figure>
+      <figure><figcaption>Upper floor</figcaption><svg id="planU" viewBox="-1 -2 32 36" role="img" aria-label="Upper floor plan"></svg></figure>
+    </div>
+    <div class="dl">
+      <a class="again" href="casa-mirador-plans.pdf" download>Download floor plans (PDF)</a>
+      <a class="ghost" href="plan-ground.png" target="_blank" rel="noopener">Ground floor, PNG</a>
+      <a class="ghost" href="plan-upper.png" target="_blank" rel="noopener">Upper floor, PNG</a>
+    </div>
+    <div>
+      <h3>The whole house, as a model</h3>
+      <p class="lede">The full 72-second route through the 3D model: entry, great room, kitchen and dining, the pool terrace, up through the double-height void to the bedrooms and balcony, then out for the aerial view.</p>
+    </div>
+    <video class="model" src="model-walkthrough.mp4" poster="poster-model.jpg" controls muted playsinline preload="metadata"></video>
+    <button class="again" id="again" type="button">Watch the flythrough again</button>
+    <p class="note">Concept design by worldmatters. The opening film is a photoreal pass over the 3D model of this layout; the model walkthrough shows the complete house. Finishes, furniture and landscaping are indicative.</p>
+  </div>
+</section>
+
+<script>
+const PATH = {"frames":436,"fps":24,"labels":[[1,"Arrival"],[142,"Front door"],[224,"Entry gallery"],[340,"Great room"]],"cam":[[10.6,44.0,4.2,1.571],[10.6,43.94,4.19,1.571],[10.6,43.78,4.18,1.571],[10.6,43.51,4.15,1.571],[10.6,43.15,4.11,1.571],[10.6,42.7,4.07,1.571],[10.6,42.17,4.01,1.571],[10.6,41.58,3.95,1.571],[10.6,40.92,3.88,1.571],[10.6,40.2,3.8,1.571],[10.6,39.44,3.72,1.571],[10.6,38.64,3.63,1.571],[10.6,37.81,3.54,1.571],[10.61,36.95,3.44,1.571],[10.61,36.08,3.35,1.571],[10.61,35.2,3.24,1.571],[10.61,34.32,3.14,1.571],[10.61,33.45,3.04,1.571],[10.61,32.59,2.93,1.572],[10.61,31.76,2.83,1.572],[10.62,30.95,2.73,1.572],[10.62,30.18,2.63,1.572],[10.62,29.46,2.53,1.572],[10.62,28.79,2.43,1.572],[10.63,28.16,2.34,1.573],[10.63,27.56,2.25,1.573],[10.63,27.0,2.17,1.573],[10.64,26.48,2.09,1.573],[10.64,25.99,2.02,1.574],[10.64,25.52,1.95,1.574],[10.64,25.07,1.9,1.574],[10.65,24.65,1.85,1.574],[10.65,24.24,1.81,1.574],[10.65,23.85,1.78,1.575],[10.65,23.47,1.76,1.575],[10.65,23.09,1.75,1.575],[10.65,22.72,1.75,1.575],[10.65,22.36,1.75,1.575],[10.65,21.99,1.75,1.575],[10.65,21.63,1.75,1.575],[10.64,21.27,1.75,1.575],[10.64,20.91,1.75,1.575],[10.64,20.56,1.75,1.575],[10.63,20.2,1.75,1.574],[10.63,19.84,1.75,1.574],[10.63,19.49,1.75,1.574],[10.62,19.13,1.75,1.574],[10.62,18.77,1.75,1.574],[10.62,18.41,1.75,1.574],[10.61,18.05,1.75,1.573],[10.61,17.68,1.75,1.573],[10.61,17.31,1.75,1.573],[10.6,16.94,1.75,1.573],[10.6,16.56,1.75,1.572],[10.6,16.18,1.75,1.572],[10.6,15.79,1.75,1.571],[10.6,15.4,1.75,1.57],[10.6,15.0,1.75,1.555],[10.6,14.61,1.75,1.521],[10.6,14.21,1.75,1.473],[10.6,13.81,1.75,1.411],[10.6,13.42,1.75,1.338],[10.6,13.03,1.75,1.258],[10.6,12.66,1.75,1.172],[10.6,12.3,1.75,1.083],[10.6,11.95,1.75,0.996],[10.6,11.62,1.75,0.912],[10.6,11.31,1.75,0.835],[10.6,11.03,1.75,0.767],[10.6,10.77,1.75,0.71],[10.6,10.53,1.75,0.668],[10.6,10.33,1.75,0.643],[10.6,10.16,1.75,0.635],[10.67,10.02,1.75,0.634],[10.81,9.91,1.76,0.633],[11.03,9.82,1.76,0.633],[11.3,9.75,1.77,0.633],[11.62,9.68,1.78,0.633],[11.98,9.6,1.79,0.633],[12.37,9.53,1.81,0.634],[12.77,9.43,1.82,0.634],[13.18,9.32,1.85,0.634],[13.59,9.18,1.87,0.634],[13.98,9.01,1.9,0.633],[14.35,8.79,1.93,0.632],[14.68,8.53,1.96,0.629],[14.97,8.22,1.99,0.601],[15.22,7.87,2.03,0.539],[15.43,7.49,2.07,0.448],[15.61,7.08,2.11,0.332],[15.76,6.67,2.15,0.194],[15.89,6.25,2.19,0.04],[15.98,5.84,2.23,-0.122],[16.06,5.45,2.27,-0.285],[16.11,5.09,2.3,-0.441],[16.15,4.76,2.33,-0.583],[16.18,4.48,2.36,-0.704],[16.19,4.26,2.38,-0.8],[16.2,4.1,2.39,-0.868],[16.2,4.01,2.4,-0.904],[16.2,4.01,2.4,-0.908],[16.19,4.05,2.39,-0.905],[16.19,4.14,2.38,-0.9],[16.17,4.27,2.37,-0.891],[16.16,4.43,2.35,-0.881],[16.14,4.64,2.33,-0.868],[16.11,4.87,2.31,-0.852],[16.09,5.14,2.28,-0.835],[16.06,5.44,2.26,-0.815],[16.03,5.77,2.23,-0.794],[16.0,6.12,2.2,-0.771]],"camStep":4};
+const FPS = PATH.fps, TOTAL = PATH.frames;
+// the film is two 9.04 s clips joined with a 0.6 s crossfade at 8.44 s
+const SEAM = 8.44, XF = 0.6;
+const frameAt = t => (t < SEAM ? t : t + XF) * FPS + 1;
+const timeAt = f => { const b = (f - 1) / FPS; return b < SEAM ? b : Math.max(SEAM, b - XF); };
+
+const INFO = {
+  "Arrival":            ["Ground floor", "Approach up the drive to an oak-slat entry and a three-car garage.", "Street front · 30 m"],
+  "Front door":         ["Ground floor", "An oak pivot door, three metres tall, under a cantilevered canopy.", "Door 2.0 × 3.0 m"],
+  "Entry gallery":      ["Ground floor", "A long gallery leads straight through to the foyer and the light beyond.", "5 × 14 m"],
+  "Great room":         ["Ground floor", "The heart of the house: a double-height room with a full glass wall to the pool.", "17 × 12 m · 7 m ceiling"],
+  "Kitchen":            ["Ground floor", "Open to the great room, with a six-metre marble island that seats four.", "9 × 8 m"],
+  "Dining":             ["Ground floor", "A table for eight under a single linear pendant, facing the garden.", "8 × 8 m"],
+  "Pool terrace":       ["Outdoors", "A sliding wall opens the great room onto a covered terrace and the pool.", "Pool 13 × 5.5 m"],
+  "Double-height void": ["Ground to upper", "Rising past the floating oak stair through seven metres of open volume.", "Void 9 × 12 m"],
+  "Upper gallery":      ["Upper floor", "A glass-railed bridge links the two bedroom wings over the great room.", "Bridge 9 × 3 m"],
+  "Primary suite":      ["Upper floor", "The west wing: bedroom, walk-in and bath, glazed toward the pool.", "13 × 12 m"],
+  "Balcony":            ["Upper floor", "A balcony runs the full width of the house above the terrace.", "30 × 3.5 m"],
+  "The villa":          ["Overview", "Five bedrooms, about 1,200 m² over two floors, set on its own lawn.", "Footprint 30 × 20 m"],
+};
+const LABELS = PATH.labels.map(([f, name], i) => ({ f, name, i, info: INFO[name] }));
+
+/* ---------- plans ---------- */
+// plan coordinates: x east (m), y south = 20 - Y(north)
+const R = (x, y, w, h, name, cls = "") => ({ x, y, w, h, name, cls });
+const GROUND = [
+  R(0,0,8,8,"Garage"), R(8,0,5,8,"Entry"), R(13,0,9,8,"Kitchen"), R(22,0,8,8,"Dining"),
+  R(0,8,8,6,"Office"), R(8,8,5,6,"Foyer"), R(13,8,17,12,"Great room"),
+  R(0,14,8,6,"Guest"), R(8,14,5,6,"Powder"), R(0,20,30,13.5,"", "out"),
+];
+const UPPER = [
+  R(0,0,8,8,"Walk-in · bath"), R(8,0,5,8,"Hall"), R(13,0,9,8,"Bridge"), R(22,0,8,10,"Bedroom 2"),
+  R(0,8,13,12,"Primary"), R(13,8,9,12,"Open to below", "void"), R(22,10,8,10,"Bedroom 3"),
+  R(0,20,30,3.5,"Balcony"),
+];
+const ROOM_ZONE = { "Front door":"Entry", "Entry gallery":"Entry", "Great room":"Great room", "Kitchen":"Kitchen",
+  "Dining":"Dining", "Upper gallery":"Bridge", "Primary suite":"Primary", "Balcony":"Balcony", "Double-height void":"Great room" };
+
+function drawPlan(svg, rooms, withLabels) {
+  const ns = "http://www.w3.org/2000/svg";
+  const g = (tag, attrs) => { const e = document.createElementNS(ns, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; };
+  const map = {};
+  rooms.forEach(r => {
+    map[r.name] = g("rect", { x: r.x, y: r.y, width: r.w, height: r.h, class: "r " + r.cls });
+    if (withLabels && r.name) { const t = g("text", { x: r.x + r.w / 2, y: r.y + r.h / 2, class: "lbl" }); t.textContent = r.name; }
+  });
+  g("rect", { x: 15, y: 25.5, width: 13, height: 5.5, class: "pool" });
+  if (withLabels) { const t = g("text", { x: 21.5, y: 28.25, class: "lbl" }); t.textContent = "Pool"; t.style.fill = "#0f2a2e"; }
+  g("rect", { x: 0, y: 0, width: 30, height: 20, class: "shell" });
+  return map;
+}
+drawPlan(document.getElementById("planG"), GROUND, true);
+drawPlan(document.getElementById("planU"), UPPER, true);
+
+const mini = document.getElementById("mini");
+let miniRooms = {}, miniFloor = null, cone, dot;
+function setMiniFloor(up) {
+  if (miniFloor === up) return;
+  miniFloor = up;
+  mini.innerHTML = "";
+  miniRooms = drawPlan(mini, up ? UPPER : GROUND, false);
+  const ns = "http://www.w3.org/2000/svg";
+  cone = document.createElementNS(ns, "path"); cone.setAttribute("class", "cone"); mini.appendChild(cone);
+  dot = document.createElementNS(ns, "circle"); dot.setAttribute("r", ".75"); dot.setAttribute("class", "dot"); mini.appendChild(dot);
+  document.getElementById("mapLevel").textContent = up ? "Upper" : "Ground";
+}
+
+/* ---------- timeline ---------- */
+const tl = document.getElementById("timeline");
+const ticks = LABELS.map(l => {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.style.left = (timeAt(l.f) / 17.5 * 100) + "%";
+  b.setAttribute("aria-label", "Jump to " + l.name);
+  b.innerHTML = "<span></span>"; b.firstChild.textContent = l.name;
+  b.addEventListener("click", () => scrollToFrame(l.f + 1));
+  tl.appendChild(b);
+  return b;
+});
+
+/* ---------- scrubbing ---------- */
+const tour = document.getElementById("tour"), stage = document.getElementById("stage");
+const film = document.getElementById("film");
+const intro = document.getElementById("intro"), room = document.getElementById("room");
+const fill = document.getElementById("fill"), clock = document.getElementById("clock");
+let duration = 17.5, cur = 0, shown = -1;
+
+film.addEventListener("loadeddata", () => stage.classList.add("ready"));
+film.addEventListener("loadedmetadata", () => { if (isFinite(film.duration) && film.duration > 1) duration = film.duration; });
+// iOS only decodes frames for seeking after the video has been played once by a gesture
+const unlock = () => { const p = film.play(); if (p) p.then(() => film.pause()).catch(() => {}); };
+window.addEventListener("touchstart", unlock, { once: true, passive: true });
+window.addEventListener("pointerdown", unlock, { once: true });
+
+function progress() {
+  const top = tour.getBoundingClientRect().top;
+  const span = tour.offsetHeight - stage.offsetHeight;
+  return Math.min(1, Math.max(0, -top / span));
+}
+function scrollToFrame(f) {
+  const span = tour.offsetHeight - stage.offsetHeight;
+  window.scrollTo({ top: tour.offsetTop + span * Math.min(1, timeAt(f) / duration), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
+document.getElementById("again").addEventListener("click", () => scrollToFrame(1));
+
+const mmss = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+
+function render() {
+  const target = progress() * duration;
+  cur += (target - cur) * 0.16;
+  if (Math.abs(target - cur) < 0.002) cur = target;
+  if (film.readyState >= 1 && !film.seeking && Math.abs(film.currentTime - cur) > 0.015) {
+    film.currentTime = Math.min(cur, duration - 0.05);
+  }
+  const frame = frameAt(cur);
+  fill.style.width = (cur / duration * 100) + "%";
+  clock.textContent = mmss(cur) + " / " + mmss(duration);
+
+  intro.classList.toggle("gone", frame > 40);
+  room.classList.toggle("gone", frame <= 40);
+
+  let idx = 0;
+  for (let i = 0; i < LABELS.length; i++) if (frame >= LABELS[i].f - 12) idx = i;
+  if (idx !== shown) {
+    shown = idx;
+    const L = LABELS[idx];
+    document.getElementById("roomNo").textContent = String(idx + 1).padStart(2, "0") + " / " + String(LABELS.length).padStart(2, "0");
+    document.getElementById("roomFloor").textContent = L.info[0];
+    document.getElementById("roomName").textContent = L.name;
+    document.getElementById("roomText").textContent = L.info[1];
+    document.getElementById("roomDim").textContent = L.info[2];
+    ticks.forEach((t, i) => t.classList.toggle("on", i === idx));
+  }
+
+  // minimap: camera position and heading
+  const ci = Math.min(PATH.cam.length - 1, Math.max(0, Math.round(frame / PATH.camStep)));
+  const [x, y, z, a] = PATH.cam[ci];
+  setMiniFloor(z > 3.45 && y > -4 && frame < LABELS[LABELS.length - 1].f - 60);
+  const px = Math.min(31.5, Math.max(-1.5, x)), py = Math.min(33.5, Math.max(-2.5, 20 - y));
+  dot.setAttribute("cx", px); dot.setAttribute("cy", py);
+  const s = 0.55, L = 4.2;
+  cone.setAttribute("d", `M${px},${py} L${px + L * Math.cos(a - s)},${py + L * Math.sin(a - s)} L${px + L * Math.cos(a + s)},${py + L * Math.sin(a + s)} Z`);
+  const zone = ROOM_ZONE[LABELS[idx].name];
+  for (const k in miniRooms) miniRooms[k].classList.toggle("here", k === zone);
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
