@@ -4,20 +4,20 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Marlow Bay</title>
-<meta name="description" content="Marlow Bay: a 60-storey residential tower on the water. One floor lights up, the camera flies in through the window and walks you through the home. Concept by worldmatters.">
-<meta property="og:title" content="Marlow Bay · worldmatters">
-<meta property="og:description" content="Move over the tower. Step inside.">
+<meta name="description" content="Marlow Bay, Residence 42: one lit floor in a 60-storey tower on the water. Fly in through the window and walk every room with the floor plan beside you. Concept by worldmatters.">
+<meta property="og:title" content="Marlow Bay · Residence 42">
+<meta property="og:description" content="One floor is lit. Fly in and walk through it.">
 <meta property="og:image" content="tower-sm.jpg">
 <link rel="icon" href="data:,">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600&display=swap">
 <style>
-/* Layout: one sticky stage is the whole film. Scroll rises up the tower to a glowing floor, pushes in through its window,
-   then walks through the residence room by room. Single deliberate theme: blue-hour sky, warm window light. */
+/* Layout: one sticky stage is the whole film. Scroll rises to the single lit floor, pushes through its window, then walks
+   the residence room by room with the floor plan alongside. Single deliberate theme: blue-hour sky, warm window light. */
 :root {
   --night: #0b1220;        /* page ground, deep blue hour */
-  --night-2: #131c2f;      /* panels */
+  --night-2: #111a2c;      /* plan panel */
   --line: rgba(232,236,244,.18);
   --sky: #e9edf5;          /* primary text */
   --sky-dim: #a7b0c2;      /* secondary text */
@@ -34,49 +34,30 @@ a { color: inherit; }
 button { font: inherit; color: inherit; }
 
 /* ---------- stage ---------- */
-.tour { position: relative; height: 900vh; }
+.tour { position: relative; height: 1700vh; }
 .stage { position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100svh - env(safe-area-inset-top, 0px)); overflow: hidden; background: #1b2a4a; }
 .world { position: absolute; left: 0; top: 0; width: 1600px; height: 904px; transform-origin: 0 0; will-change: transform; }
 .world img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .hit { position: absolute; cursor: pointer; }
-.band { position: absolute; left: -2px; right: -2px; height: 0; pointer-events: none;
+.band { position: absolute; left: -2px; right: -2px; pointer-events: none;
   background: rgba(255,214,150,.42); box-shadow: 0 0 0 1px rgba(255,220,160,.95), 0 0 18px 4px rgba(255,200,120,.7), 0 0 60px 12px rgba(255,190,110,.35);
   animation: breathe 2.4s ease-in-out infinite; }
-@keyframes breathe { 0%,100% { opacity: .78; } 50% { opacity: 1; } }
+@keyframes breathe { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 .shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(8,13,25,.78) 0%, rgba(8,13,25,.35) 30%, rgba(8,13,25,0) 46%, rgba(8,13,25,0) 64%, rgba(8,13,25,.5) 100%); }
 .flash { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, rgba(255,222,170,1) 0%, rgba(255,205,140,.85) 40%, rgba(255,190,120,0) 75%); opacity: 0; }
 
-/* inside the residence */
-.inside { position: absolute; inset: 0; opacity: 0; pointer-events: none; background: #05080f; }
-.inside .r { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
-.inside img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 55%; transition: opacity .9s ease; }
-.inside img.night { opacity: 0; }
-.stage.isnight .inside img.night { opacity: 1; }
-.inside::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,8,15,.82) 0%, rgba(5,8,15,0) 34%), linear-gradient(180deg, rgba(5,8,15,.55) 0%, rgba(5,8,15,0) 20%); pointer-events: none; }
-.roomcap { position: absolute; z-index: 3; left: max(28px, env(safe-area-inset-left, 0px)); bottom: 84px; opacity: 0; pointer-events: none; transition: opacity .4s; }
-.roomcap .k { font: 600 11px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--glow); }
-.roomcap h2 { font: 400 clamp(40px, 6vw, 84px)/1 var(--display); margin: 10px 0 8px; }
-.roomcap p { margin: 0; max-width: 42ch; color: var(--sky); }
-.controls { position: absolute; z-index: 3; left: max(28px, env(safe-area-inset-left, 0px)); right: max(28px, env(safe-area-inset-right, 0px)); bottom: 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; opacity: 0; pointer-events: none; transition: opacity .4s; }
-.stage.in .controls, .stage.in .roomcap { opacity: 1; }
-.stage.in .controls { pointer-events: auto; }
-.rooms { display: flex; gap: 6px; flex-wrap: wrap; }
-.chip { cursor: pointer; border: 1px solid var(--line); background: rgba(11,18,32,.55); border-radius: 999px; padding: 9px 13px; font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--sky-dim); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-.chip.on { color: var(--night); background: var(--sky); border-color: var(--sky); }
-.dn { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: rgba(11,18,32,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
-.dn button { cursor: pointer; border: 0; background: transparent; border-radius: 999px; padding: 8px 14px; font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--sky-dim); }
-.dn button[aria-pressed="true"] { background: var(--glow); color: #1c1307; }
-
-.bar { position: absolute; inset: 0 0 auto; z-index: 4; display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  padding-block: 18px; padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); }
-.brand { font: 400 22px/1 var(--display); letter-spacing: .02em; text-decoration: none; }
+.bar { position: absolute; inset: 0 0 auto; z-index: 5; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+  padding-block: 18px; padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); pointer-events: none; }
+.bar > * { pointer-events: auto; }
+.brand { font: 400 22px/1 var(--display); letter-spacing: .02em; text-decoration: none; white-space: nowrap; }
 .brand small { font: 500 10.5px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--sky-dim); margin-left: 12px; }
 .pills { display: flex; gap: 8px; }
-.pill { cursor: pointer; font: 600 11.5px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(11,18,32,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.pill { cursor: pointer; font: 600 11.5px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(11,18,32,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .pill.solid { background: var(--sky); color: var(--night); border-color: var(--sky); }
 .pill[hidden] { display: none; }
-.pill:focus-visible, .btn:focus-visible, .chip:focus-visible, .dn button:focus-visible, .step:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
+.pill:focus-visible, .btn:focus-visible, .dn button:focus-visible, .stop:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
 
+/* outside: copy and the one residence */
 .outside { transition: opacity .35s; }
 .stage.in .outside, .stage.entering .outside { opacity: 0; pointer-events: none; }
 .copy { position: absolute; z-index: 2; left: max(28px, env(safe-area-inset-left, 0px)); top: 50%; transform: translateY(-50%); width: min(400px, 34vw); }
@@ -85,38 +66,78 @@ button { font: inherit; color: inherit; }
 .copy h1 em { font-style: italic; color: var(--glow); }
 .copy p { margin: 0; color: var(--sky); max-width: 36ch; }
 .copy .hint { margin-top: 18px; font: 500 12px/1.5 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--sky-dim); }
-
-.floorcard { position: absolute; z-index: 2; right: max(28px, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); width: 250px; text-align: right; }
-.floorcard .n { font: 400 132px/.85 var(--display); color: var(--sky); font-variant-numeric: lining-nums tabular-nums; }
+.floorcard { position: absolute; z-index: 2; right: max(28px, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); width: 260px; text-align: right; }
+.floorcard .n { font: 400 132px/.85 var(--display); color: var(--sky); font-variant-numeric: lining-nums; }
 .floorcard .lvl { font: 600 11px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--sky-dim); margin-top: 6px; }
 .info { margin-top: 18px; padding: 14px 16px; text-align: left; background: rgba(11,18,32,.66); border: 1px solid var(--line); border-radius: 10px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .info h2 { font: 400 22px/1.1 var(--display); margin: 0 0 10px; }
 .info dl { margin: 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 14px; font-size: 13.5px; }
 .info dt { color: var(--sky-dim); }
 .info dd { margin: 0; text-align: right; font-variant-numeric: tabular-nums; }
-.status { display: inline-block; font: 600 10.5px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; }
-.status.available { background: rgba(124,214,160,.16); color: #9be2b7; }
-.status.reserved { background: rgba(231,191,124,.16); color: var(--glow); }
-.status.sold { background: rgba(232,236,244,.1); color: var(--sky-dim); }
+.status { display: inline-block; font: 600 10.5px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; padding: 5px 8px; border-radius: 999px; background: rgba(124,214,160,.16); color: #9be2b7; }
 .btn { margin-top: 12px; width: 100%; cursor: pointer; border: 0; border-radius: 999px; padding: 12px 14px; background: var(--glow); color: #1c1307; font: 600 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; }
 .btn:hover { background: #f1d29d; }
-.steps { display: flex; gap: 8px; justify-content: flex-end; margin-top: 10px; }
-.step { cursor: pointer; width: 38px; height: 38px; border-radius: 50%; border: 1px solid var(--line); background: rgba(11,18,32,.5); font-size: 16px; }
+
+/* inside: the residence, image left and plan right */
+.inside { position: absolute; inset: 0; opacity: 0; pointer-events: none; background: #05080f; display: grid; grid-template-columns: minmax(0, 1fr) min(400px, 31vw); }
+.stage.in .inside { pointer-events: auto; }
+.view { position: relative; overflow: hidden; }
+.view .r { position: absolute; inset: 0; opacity: 0; }
+.view img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 55%; transition: opacity .9s ease; }
+.view img.night { opacity: 0; }
+.stage.isnight .view img.night { opacity: 1; }
+.view::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(0deg, rgba(5,8,15,.85) 0%, rgba(5,8,15,0) 36%), linear-gradient(180deg, rgba(5,8,15,.55) 0%, rgba(5,8,15,0) 18%); }
+.roomcap { position: absolute; z-index: 2; left: max(28px, env(safe-area-inset-left, 0px)); right: calc(min(400px, 31vw) + 28px); bottom: 78px; }
+.roomcap .k { font: 600 11px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--glow); font-variant-numeric: tabular-nums; }
+.roomcap h2 { font: 400 clamp(40px, 5.4vw, 80px)/1 var(--display); margin: 10px 0 8px; }
+.roomcap p { margin: 0; max-width: 46ch; }
+.vctl { position: absolute; z-index: 2; left: max(28px, env(safe-area-inset-left, 0px)); right: calc(min(400px, 31vw) + 28px); bottom: 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.progress { display: flex; gap: 4px; flex: 1; max-width: 360px; }
+.progress i { flex: 1; height: 2px; background: rgba(232,236,244,.22); position: relative; overflow: hidden; }
+.progress i b { position: absolute; inset: 0; background: var(--glow); transform-origin: left; transform: scaleX(0); }
+.dn { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: rgba(11,18,32,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.dn button { cursor: pointer; border: 0; background: transparent; border-radius: 999px; padding: 8px 14px; font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--sky-dim); }
+.dn button[aria-pressed="true"] { background: var(--glow); color: #1c1307; }
+
+.plan { background: var(--night-2); border-left: 1px solid var(--line); display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 16px; padding: 84px 24px 22px; padding-right: max(24px, env(safe-area-inset-right, 0px)); min-height: 0; }
+.plan .ph { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; }
+.plan .ph b { font: 400 22px/1.1 var(--display); }
+.plan .ph span { font: 600 10.5px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--sky-dim); }
+.plan svg { width: 100%; height: auto; display: block; }
+.plan .rm { fill: rgba(232,236,244,.035); stroke: rgba(232,236,244,.5); stroke-width: .06; transition: fill .4s; }
+.plan .rm.on { fill: rgba(231,191,124,.28); }
+.plan .out { fill: none; stroke: rgba(232,236,244,.4); stroke-width: .05; stroke-dasharray: .25 .2; }
+.plan .out.on { fill: rgba(231,191,124,.22); }
+.plan .shell { fill: none; stroke: var(--sky); stroke-width: .18; }
+.plan .glass { stroke: #8fc3e8; stroke-width: .16; }
+.plan .door { stroke: var(--night-2); stroke-width: .24; }
+.plan .lb { fill: var(--sky-dim); font: 500 .5px var(--body); text-anchor: middle; dominant-baseline: central; letter-spacing: .02em; }
+.plan .lb.on { fill: var(--sky); }
+.plan .cam { fill: var(--glow); }
+.plan .cone { fill: var(--glow); opacity: .32; }
+.plan .bay { fill: #8fc3e8; font: 600 .42px var(--body); letter-spacing: .14em; text-anchor: middle; }
+.stops { list-style: none; margin: 0; padding: 0; overflow: auto; min-height: 0; border-top: 1px solid var(--line); }
+.stop { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: baseline; padding: 9px 2px; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--sky-dim); }
+.stop .i { font: 600 11px/1 var(--body); color: var(--sky-dim); font-variant-numeric: tabular-nums; }
+.stop .a { font-size: 12.5px; font-variant-numeric: tabular-nums; }
+.stop.on { color: var(--sky); }
+.stop.on .i { color: var(--glow); }
 
 /* ---------- after ---------- */
 .after { padding-block: 96px 72px; padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); }
-.wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 48px; }
+.wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 40px; }
 .after h3 { font: 400 clamp(36px, 4.6vw, 60px)/1.05 var(--display); margin: 0; text-wrap: balance; }
 .lede { color: var(--sky-dim); max-width: 60ch; margin: 14px 0 0; }
-.types { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
-.types div { padding: 20px 18px 20px 0; border-bottom: 1px solid var(--line); min-width: 0; }
-.types b { display: block; font: 600 11px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--glow); }
-.types strong { display: block; font: 400 26px/1.15 var(--display); margin: 10px 0 6px; }
-.types span { color: var(--sky-dim); font-size: 14px; font-variant-numeric: tabular-nums; }
-.note { font-size: 13px; color: var(--sky-dim); border-top: 1px solid var(--line); padding-top: 20px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+.facts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--line); }
+.facts div { padding: 18px 18px 18px 0; border-bottom: 1px solid var(--line); min-width: 0; }
+.facts dt { font: 600 11px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--glow); }
+.facts dd { margin: 10px 0 0; font: 400 28px/1.1 var(--display); font-variant-numeric: tabular-nums; }
+.cta { display: flex; gap: 12px; flex-wrap: wrap; }
+.cta a { text-decoration: none; }
+.note { font-size: 13px; color: var(--sky-dim); border-top: 1px solid var(--line); padding-top: 20px; }
 
 @media (max-width: 860px) {
-  .tour { height: 800vh; }
+  .tour { height: 1500vh; }
   .shade { background: linear-gradient(0deg, rgba(8,13,25,.9) 0%, rgba(8,13,25,.45) 36%, rgba(8,13,25,0) 56%), linear-gradient(180deg, rgba(8,13,25,.92) 0%, rgba(8,13,25,.7) 26%, rgba(8,13,25,0) 44%); }
   .copy { top: 76px; transform: none; width: auto; right: max(28px, env(safe-area-inset-right, 0px)); text-shadow: 0 1px 14px rgba(0,0,0,.6); }
   .copy h1 { font-size: 34px; margin: 10px 0 8px; }
@@ -124,239 +145,261 @@ button { font: inherit; color: inherit; }
   .copy .hint { margin-top: 6px; color: var(--sky); }
   .floorcard { top: auto; bottom: 18px; transform: none; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); width: auto; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: end; text-align: left; }
   .floorcard .n { font-size: 76px; }
-  .floorcard .lvl, .steps { display: none; }
+  .floorcard .lvl { display: none; }
   .info { margin-top: 0; }
-  .brand small, .pills .pill:not(.solid) { display: none; }
-  .roomcap { bottom: 132px; right: max(28px, env(safe-area-inset-right, 0px)); }
+  .brand small, .pills .pill:not(.solid):not(#back) { display: none; }
+  .inside { grid-template-columns: minmax(0, 1fr); }
+  .plan { position: absolute; z-index: 3; top: 64px; right: max(12px, env(safe-area-inset-right, 0px)); width: 46vw; max-width: 220px; padding: 10px; gap: 6px; border: 1px solid var(--line); border-radius: 10px; background: rgba(17,26,44,.86); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); grid-template-rows: auto auto; }
+  .plan .ph b { font-size: 14px; }
+  .plan .ph span, .stops { display: none; }
+  .plan .lb { display: none; }
+  .roomcap { bottom: 72px; right: max(28px, env(safe-area-inset-right, 0px)); }
+  .vctl { right: max(28px, env(safe-area-inset-right, 0px)); }
+  .roomcap h2 { font-size: 44px; }
   .roomcap p { font-size: 14px; }
-  .roomcap h2 { font-size: 46px; }
-  .controls { flex-direction: column; align-items: flex-start; bottom: 16px; gap: 8px; }
-  .types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .facts { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (prefers-reduced-motion: reduce) { .band { animation: none; } * { transition: none !important; } }
 </style>
 </head>
 <body>
 
-<section class="tour" id="tour" aria-label="Marlow Bay tower">
+<section class="tour" id="tour" aria-label="Marlow Bay, Residence 42">
   <div class="stage" id="stage">
     <div class="world" id="world">
-      <img src="tower.jpg" alt="Marlow Bay, a slender 60-storey tower on the water at blue hour">
-      <div class="hit" id="hit"><div class="band" id="band"></div></div>
+      <img src="tower.jpg" alt="Marlow Bay, a slender 60-storey tower on the water at blue hour, with the 42nd floor lit">
+      <div class="hit" id="hit" title="Step inside Residence 42"><div class="band" id="band"></div></div>
     </div>
     <div class="shade outside"></div>
     <div class="flash" id="flash"></div>
 
-    <div class="inside" id="inside" aria-hidden="true">
-      <div class="r" data-r="great"><img class="day" src="great.jpg" alt=""><img class="night" src="great-night.jpg" alt=""></div>
-      <div class="r" data-r="kitchen"><img class="day" src="kitchen.jpg" alt=""><img class="night" src="kitchen-night.jpg" alt=""></div>
-      <div class="r" data-r="bedroom"><img class="day" src="bedroom.jpg" alt=""><img class="night" src="bedroom-night.jpg" alt=""></div>
+    <div class="inside" id="inside">
+      <div class="view" id="view" aria-hidden="true"></div>
+      <aside class="plan" aria-label="Floor plan of Residence 42">
+        <div class="ph"><b>Residence 42</b><span>Floor plan · 188 m²</span></div>
+        <svg id="plan" viewBox="-0.8 -0.9 20.6 14.6" role="img" aria-label="Floor plan with the current room highlighted"></svg>
+        <ol class="stops" id="stops"></ol>
+      </aside>
+      <div class="roomcap" id="roomcap" aria-live="polite">
+        <div class="k" id="rk">01 / 09 · 22 m²</div>
+        <h2 id="rname">Entry gallery</h2>
+        <p id="rtext"></p>
+      </div>
+      <div class="vctl">
+        <div class="progress" id="progress" aria-hidden="true"></div>
+        <div class="dn" role="group" aria-label="Time of day">
+          <button type="button" id="day" aria-pressed="true">Day</button>
+          <button type="button" id="night" aria-pressed="false">Night</button>
+        </div>
+      </div>
     </div>
 
     <div class="bar">
-      <a class="brand" href="#tour">Marlow Bay<small>Residences on the water</small></a>
+      <a class="brand" href="#tour">Marlow Bay<small>Residence 42</small></a>
       <div class="pills">
         <button class="pill" id="back" type="button" hidden>Back to the tower</button>
-        <a class="pill" href="#residences" id="resLink">Residences</a>
-        <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a viewing</a>
+        <a class="pill" href="#details" id="detLink">Details</a>
+        <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2042%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a viewing</a>
       </div>
     </div>
 
     <div class="copy outside">
-      <div class="eyebrow">Now leasing · 60 storeys</div>
+      <div class="eyebrow">One residence · Floor 42</div>
       <h1>Move over the tower. <em>Step inside.</em></h1>
-      <p>One floor is lit for you. Scroll and the camera rises to it, through the window and into the home.</p>
-      <div class="hint" id="hint">Hover the tower to choose another floor · scroll to enter</div>
+      <p>Only one floor is lit tonight. Scroll and the camera rises to it, through the window and into every room of the home.</p>
+      <div class="hint">Scroll to enter</div>
     </div>
 
-    <div class="floorcard outside" aria-live="polite">
+    <div class="floorcard outside">
       <div>
-        <div class="n" id="fn">42</div>
+        <div class="n">42</div>
         <div class="lvl">Floor</div>
-        <div class="steps"><button class="step" id="down" type="button" aria-label="Floor below">−</button><button class="step" id="up" type="button" aria-label="Floor above">+</button></div>
       </div>
       <div class="info">
-        <h2 id="ftype">Three-bedroom</h2>
+        <h2>Three bedrooms + study</h2>
         <dl>
-          <dt>Interior</dt><dd id="fsize">188 m²</dd>
-          <dt>Facing</dt><dd id="fview">Bay and skyline</dd>
-          <dt>Status</dt><dd><span class="status available" id="fstatus">Available</span></dd>
+          <dt>Interior</dt><dd>188 m²</dd>
+          <dt>Terrace</dt><dd>34 m²</dd>
+          <dt>Facing</dt><dd>Bay and skyline</dd>
+          <dt>Status</dt><dd><span class="status">Available</span></dd>
         </dl>
         <button class="btn" id="enter" type="button">Step inside</button>
       </div>
     </div>
-
-    <div class="roomcap" id="roomcap" aria-live="polite">
-      <div class="k" id="rk">Floor 42 · Three-bedroom</div>
-      <h2 id="rname">Great room</h2>
-      <p id="rtext">Seven metres of glass on two sides, a stone fireplace and the whole bay in front of you.</p>
-    </div>
-    <div class="controls">
-      <div class="rooms" id="rooms">
-        <button class="chip on" type="button" data-i="0">Great room</button>
-        <button class="chip" type="button" data-i="1">Kitchen</button>
-        <button class="chip" type="button" data-i="2">Primary suite</button>
-      </div>
-      <div class="dn" role="group" aria-label="Time of day">
-        <button type="button" id="day" aria-pressed="true">Day</button>
-        <button type="button" id="night" aria-pressed="false">Night</button>
-      </div>
-    </div>
   </div>
 </section>
 
-<section class="after" id="residences">
+<section class="after" id="details">
   <div class="wrap">
     <div>
-      <h3>Four kinds of home, one view</h3>
-      <p class="lede">Every residence faces the bay through floor-to-ceiling glass, with travertine, white oak and honed marble throughout. The higher you go, the larger the plan.</p>
+      <h3>Residence 42, the whole floor plate facing the bay</h3>
+      <p class="lede">A private gallery entry, a corner great room with seven metres of glass, a kitchen and dining room that open to the terrace, a study, a guest bedroom and a primary suite with its own bath and walk-in.</p>
     </div>
-    <div class="types">
-      <div><b>Floors 10–29</b><strong>Two-bedroom</strong><span>118–132 m²</span></div>
-      <div><b>Floors 30–49</b><strong>Three-bedroom</strong><span>176–194 m²</span></div>
-      <div><b>Floors 50–57</b><strong>Sky residence</strong><span>4 bedrooms · 260 m²</span></div>
-      <div><b>Floors 58–60</b><strong>Penthouse</strong><span>Full floor · 420 m²</span></div>
+    <dl class="facts">
+      <div><dt>Interior</dt><dd>188 m²</dd></div>
+      <div><dt>Terrace</dt><dd>34 m²</dd></div>
+      <div><dt>Bedrooms</dt><dd>3 + study</dd></div>
+      <div><dt>Ceiling height</dt><dd>3.1 m</dd></div>
+    </dl>
+    <div class="cta">
+      <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2042%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a private viewing</a>
+      <button class="pill" id="again" type="button">Walk through it again</button>
     </div>
-    <div class="note">
-      <span>Concept development website by <a href="https://worldmatters.shakeapp.today/">worldmatters</a>. Floors, plans and availability are illustrative.</span>
-      <a href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20a%20website%20like%20Marlow%20Bay%20for%20my%20development" target="_blank" rel="noopener">Want one for your tower?</a>
-    </div>
+    <p class="note">Concept development website by <a href="https://worldmatters.shakeapp.today/">worldmatters</a>. Plans, areas and availability are illustrative.</p>
   </div>
 </section>
 
 <script>
-/* tower geometry in image fractions (1600 × 904 world) */
+/* ---------- the one residence ---------- */
+const FLOOR = 42;
+// plan in metres: x east, y south (bay side at the bottom). cam = [x, y, view direction in degrees, 0 = east, 90 = south]
+const ROOMS = [
+  { id: 'entry',   name: 'Entry gallery', area: 22, rect: [5.5, 0, 6.5, 3.5],  cam: [8.8, 0.8, 90],   text: 'Your own front door opens onto a gallery that leads the eye straight out to the water.' },
+  { id: 'great',   name: 'Great room',    area: 42, rect: [5.5, 3.5, 6.5, 6.5], cam: [11.4, 4.3, 135], text: 'Corner glass on two sides, a stone fireplace and the whole bay in front of you.' },
+  { id: 'dining',  name: 'Dining room',   area: 23, rect: [12, 3.5, 3.5, 6.5],  cam: [13.75, 4.1, 90], text: 'A table for eight under a sculpted brass chandelier, between the kitchen and the view.' },
+  { id: 'kitchen', name: 'Kitchen',       area: 23, rect: [15.5, 3.5, 3.5, 6.5], cam: [16.2, 4.2, 82], text: 'A six-metre island in honed marble, oak joinery floor to ceiling and brass pendants.' },
+  { id: 'terrace', name: 'Terrace',       area: 34, rect: [5.5, 10, 13.5, 2.5], cam: [18.3, 11.3, 180], text: 'Thirty-four square metres of travertine and olive trees, open to the sunset.', outside: true },
+  { id: 'study',   name: 'Study',         area: 12, rect: [12, 0, 3.5, 3.5],    cam: [13.4, 3.0, -80], text: 'Oak shelving wall to wall and a desk that looks over the city.' },
+  { id: 'guest',   name: 'Guest bedroom', area: 12, rect: [15.5, 0, 3.5, 3.5],  cam: [17.2, 3.1, -95], text: 'A calm room for guests, with its own city view and a writing desk.' },
+  { id: 'bedroom', name: 'Primary suite', area: 33, rect: [0, 4, 5.5, 6],       cam: [4.9, 4.6, 125],  text: 'Wake up facing the water, with an oak headboard wall and sheer curtains.' },
+  { id: 'bath',    name: 'Primary bath',  area: 13, rect: [0, 0, 3.2, 4],       cam: [2.9, 2.0, 180],  text: 'A stone soaking tub set against the glass, a double marble vanity and a walk-in shower.' },
+];
+const WALKIN = [3.2, 0, 2.3, 4];
+
+/* ---------- tower geometry (fractions of the 1600 × 904 world) ---------- */
 const IMG_W = 1600, IMG_H = 904;
 const T = { x0: 0.350, x1: 0.492, yTop: 0.245, yBot: 0.975 };
 const F_MIN = 10, F_MAX = 60, N = F_MAX - F_MIN + 1;
-const ROOMS = [
-  { name: 'Great room', text: 'Seven metres of glass on two sides, a stone fireplace and the whole bay in front of you.' },
-  { name: 'Kitchen', text: 'A six-metre island in honed marble under brass pendants, with oak joinery floor to ceiling.' },
-  { name: 'Primary suite', text: 'Wake up facing the water. Sheer curtains, an oak headboard wall and a walk-in behind it.' },
-];
-/* scroll timeline (0–1): rise to the lit floor, push in through the window, then the three rooms */
-const P = { rise: 0.26, push: 0.37, cross: 0.41, rooms: [0.41, 0.61, 0.81, 1.0] };
+const bandH = (T.yBot - T.yTop) * IMG_H / N;
+const floorY = (T.yTop * IMG_H) + (F_MAX - FLOOR + 0.5) * bandH;
 
-const stage = document.getElementById('stage'), world = document.getElementById('world'), tour = document.getElementById('tour');
-const hit = document.getElementById('hit'), band = document.getElementById('band');
-const inside = document.getElementById('inside'), flash = document.getElementById('flash');
-const roomEls = [...inside.querySelectorAll('.r')], chips = [...document.querySelectorAll('.chip')];
+/* scroll timeline: rise, push through the window, then the rooms */
+const RISE = 0.08, PUSH = 0.13, CROSS = 0.155;
+const STEP = (1 - CROSS) / ROOMS.length;
+const roomStart = i => CROSS + i * STEP;
+
 const $ = id => document.getElementById(id);
+const stage = $('stage'), world = $('world'), tour = $('tour'), hit = $('hit'), band = $('band');
+const inside = $('inside'), view = $('view'), flash = $('flash');
 const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
 const smooth = t => { t = clamp(t); return t * t * (3 - 2 * t); };
 const seg = (p, a, b) => clamp((p - a) / (b - a));
 
 hit.style.left = (T.x0 * IMG_W) + 'px'; hit.style.width = ((T.x1 - T.x0) * IMG_W) + 'px';
 hit.style.top = (T.yTop * IMG_H) + 'px'; hit.style.height = ((T.yBot - T.yTop) * IMG_H) + 'px';
-const bandH = (T.yBot - T.yTop) * IMG_H / N;
 band.style.height = bandH + 'px';
+band.style.top = ((F_MAX - FLOOR) * bandH) + 'px';
 
-function residence(f) {
-  let type, size, view;
-  if (f >= 58) { type = 'Penthouse'; size = 420; view = 'Full floor, all four sides'; }
-  else if (f >= 50) { type = 'Sky residence'; size = 260; view = 'Bay, skyline and sunset'; }
-  else if (f >= 30) { type = 'Three-bedroom'; size = 176 + (f % 4) * 6; view = 'Bay and skyline'; }
-  else { type = 'Two-bedroom'; size = 118 + (f % 3) * 7; view = f % 2 ? 'Bay' : 'Bay and marina'; }
-  const r = (f * 37) % 10;
-  const status = r < 6 ? 'available' : r < 8 ? 'reserved' : 'sold';
-  return { type, size, view, status };
+/* ---------- build rooms, plan and list ---------- */
+const NS = 'http://www.w3.org/2000/svg';
+const svg = $('plan');
+const el = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent.appendChild(e); return e; };
+const planRects = [], planLabels = [];
+ROOMS.forEach((r, i) => {
+  const d = document.createElement('div'); d.className = 'r';
+  d.innerHTML = `<img class="day" src="${r.id}.jpg" alt=""><img class="night" src="${r.id}-night.jpg" alt="">`;
+  view.appendChild(d); r.el = d;
+  const [x, y, w, h] = r.rect;
+  planRects[i] = el('rect', { x, y, width: w, height: h, class: r.outside ? 'out' : 'rm' });
+  const t = el('text', { x: x + w / 2, y: y + h / 2 + (r.id === 'entry' ? 0.5 : 0), class: 'lb' }); t.textContent = r.name; planLabels[i] = t;
+});
+el('rect', { x: WALKIN[0], y: WALKIN[1], width: WALKIN[2], height: WALKIN[3], class: 'rm' });
+el('text', { x: WALKIN[0] + WALKIN[2] / 2, y: WALKIN[1] + WALKIN[3] / 2, class: 'lb' }).textContent = 'Walk-in';
+el('rect', { x: 0, y: 0, width: 19, height: 10, class: 'shell' });
+el('line', { x1: 0, y1: 10, x2: 19, y2: 10, class: 'glass' });          // bay-facing glass wall
+el('line', { x1: 19, y1: 3.5, x2: 19, y2: 10, class: 'glass' });
+el('line', { x1: 0, y1: 4.5, x2: 0, y2: 10, class: 'glass' });
+el('line', { x1: 12.4, y1: 0, x2: 18.6, y2: 0, class: 'glass' });
+el('line', { x1: 8.3, y1: 0, x2: 9.4, y2: 0, class: 'door' });           // front door
+el('text', { x: 12.25, y: 13.4, class: 'bay' }).textContent = 'THE BAY';
+const cone = el('path', { class: 'cone' });
+const cam = el('circle', { r: 0.32, class: 'cam' });
+
+const stops = $('stops'), progress = $('progress');
+ROOMS.forEach((r, i) => {
+  const li = document.createElement('li');
+  li.innerHTML = `<button class="stop" type="button"><span class="i">${String(i + 1).padStart(2, '0')}</span><span>${r.name}</span><span class="a">${r.area} m²</span></button>`;
+  li.firstChild.addEventListener('click', () => goTo(roomStart(i) + STEP * 0.3));
+  stops.appendChild(li); r.stop = li.firstChild;
+  const bar = document.createElement('i'); bar.innerHTML = '<b></b>'; progress.appendChild(bar); r.bar = bar.firstChild;
+});
+
+/* ---------- controls ---------- */
+const span = () => tour.offsetHeight - stage.offsetHeight;
+const scrollP = () => clamp(-tour.getBoundingClientRect().top / span());
+function goTo(p) {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: tour.offsetTop + span() * p + 2, behavior: reduce ? 'auto' : 'smooth' });
 }
-let floor = 42;
-const floorY = f => (T.yTop * IMG_H) + (F_MAX - f + 0.5) * bandH;   // centre of a floor band, in world px
-function setFloor(f) {
-  floor = clamp(f, F_MIN, F_MAX);
-  const R = residence(floor);
-  $('fn').textContent = floor;
-  $('ftype').textContent = R.type;
-  $('fsize').textContent = R.size + ' m²';
-  $('fview').textContent = R.view;
-  const s = $('fstatus'); s.className = 'status ' + R.status; s.textContent = R.status[0].toUpperCase() + R.status.slice(1);
-  band.style.top = ((F_MAX - floor) * bandH) + 'px';
-  $('rk').textContent = `Floor ${floor} · ${R.type} · ${R.size} m²`;
-}
-const floorAt = e => { const r = hit.getBoundingClientRect(); return F_MAX - clamp(Math.floor((e.clientY - r.top) / r.height * N), 0, N - 1); };
-hit.addEventListener('pointermove', e => { if (cur < P.rise + 0.02) setFloor(floorAt(e)); });
-hit.addEventListener('click', e => { setFloor(floorAt(e)); if (matchMedia('(hover: hover)').matches) goTo(P.cross + 0.01); });
-$('up').addEventListener('click', () => setFloor(floor + 1));
-$('down').addEventListener('click', () => setFloor(floor - 1));
-$('enter').addEventListener('click', () => goTo(P.cross + 0.01));
+$('enter').addEventListener('click', () => goTo(roomStart(0) + 0.01));
+hit.addEventListener('click', () => goTo(roomStart(0) + 0.01));
 $('back').addEventListener('click', () => goTo(0));
-if (matchMedia('(hover: none)').matches) $('hint').textContent = 'Tap the tower to choose another floor · scroll to enter';
-
-/* day / night inside */
+$('again').addEventListener('click', () => goTo(0));
 function setNight(on) {
   stage.classList.toggle('isnight', on);
   $('day').setAttribute('aria-pressed', String(!on)); $('night').setAttribute('aria-pressed', String(on));
 }
 $('day').addEventListener('click', () => setNight(false));
 $('night').addEventListener('click', () => setNight(true));
-chips.forEach(c => c.addEventListener('click', () => { const i = +c.dataset.i; goTo(P.rooms[i] + 0.02); }));
 
-/* scrolling */
-const span = () => tour.offsetHeight - stage.offsetHeight;
-const progress = () => clamp(-tour.getBoundingClientRect().top / span());
-function goTo(p) {
-  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
-  window.scrollTo({ top: tour.offsetTop + span() * p + 2, behavior: reduce ? 'auto' : 'smooth' });
-}
-
-let cur = 0, shownRoom = -1;
+/* ---------- the film ---------- */
+let cur = 0, shown = -1;
 function frame(p) {
   const vw = stage.clientWidth, vh = stage.clientHeight, narrow = vw < 860;
   const cover = Math.max(vw / IMG_W, vh / IMG_H);
   const z0 = narrow ? Math.max(cover, vh / (IMG_H * 0.95)) : cover;
   const zRise = z0 * (narrow ? 1.7 : 2.1);
-  const zEnter = Math.max(zRise * 1.2, (vh * 0.2) / bandH);    // the lit floor grows to a fifth of the screen
+  const zEnter = Math.max(zRise * 1.2, (vh * 0.2) / bandH);
   const cx = (T.x0 + T.x1) / 2 * IMG_W;
-  const fy = floorY(floor);
 
-  const a = smooth(seg(p, 0, P.rise));          // rise from the base to the lit floor
-  const b = smooth(seg(p, P.rise, P.push));     // push in through the window
+  const a = smooth(seg(p, 0, RISE)), b = smooth(seg(p, RISE, PUSH));
   const s = b > 0 ? zRise * Math.pow(zEnter / zRise, b) : z0 + (zRise - z0) * a;
-  const baseY = 0.72 * IMG_H;
-  const focusY = baseY + (fy - baseY) * a;
-  let tx = vw / 2 - cx * s, ty = vh * (narrow ? 0.5 : 0.5) - focusY * s;
+  const baseY = 0.72 * IMG_H, focusY = baseY + (floorY - baseY) * a;
+  let tx = vw / 2 - cx * s, ty = vh / 2 - focusY * s;
   if (b === 0) { tx = clamp(tx, vw - IMG_W * s, 0); ty = clamp(ty, vh - IMG_H * s, 0); }
   world.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
 
-  const f = smooth(seg(p, P.push - 0.06, P.cross - 0.01));        // warm window light floods the screen
-  const fo = smooth(seg(p, P.cross - 0.015, P.cross + 0.04));
+  const f = smooth(seg(p, PUSH - 0.04, CROSS - 0.008)), fo = smooth(seg(p, CROSS - 0.01, CROSS + 0.025));
   flash.style.opacity = (f * (1 - fo)).toFixed(3);
-  const inOp = smooth(seg(p, P.cross - 0.02, P.cross + 0.02));
+  const inOp = smooth(seg(p, CROSS - 0.015, CROSS + 0.012));
   inside.style.opacity = inOp.toFixed(3);
-  stage.classList.toggle('entering', p > P.rise * 0.9 && inOp < 0.5);
   const isIn = inOp > 0.5;
   stage.classList.toggle('in', isIn);
-  $('back').hidden = !isIn; $('resLink').hidden = isIn;
+  stage.classList.toggle('entering', p > RISE * 0.6 && !isIn);
+  $('back').hidden = !isIn; $('detLink').hidden = isIn;
 
-  // rooms: crossfade between them, each with a slow push forward
-  let room = 0;
-  roomEls.forEach((el, i) => {
-    const r0 = P.rooms[i], r1 = P.rooms[i + 1];
-    const fadeIn = i === 0 ? 1 : smooth(seg(p, r0 - 0.03, r0 + 0.02));
-    const fadeOut = i === roomEls.length - 1 ? 0 : smooth(seg(p, r1 - 0.03, r1 + 0.02));
-    el.style.opacity = (fadeIn * (1 - fadeOut)).toFixed(3);
-    const t = seg(p, i === 0 ? P.cross - 0.02 : r0 - 0.03, r1);
-    const start = i === 0 ? 1.32 : 1.04;            // the first room arrives through the glass
-    const sc = start + (1.16 - start) * smooth(t) + (i === 0 ? 0 : 0.0);
-    const drift = (i % 2 ? -1 : 1) * 1.6 * smooth(t);
-    el.querySelectorAll('img').forEach(img => img.style.transform = `scale(${(i === 0 ? sc : 1.04 + 0.12 * smooth(t)).toFixed(4)}) translateX(${drift.toFixed(2)}%)`);
-    if (p >= r0 - 0.01) room = i;
+  let cur = 0;
+  ROOMS.forEach((r, i) => {
+    const r0 = roomStart(i), r1 = r0 + STEP, x = STEP * 0.22;
+    const fin = i === 0 ? 1 : smooth(seg(p, r0 - x, r0 + x * 0.4));
+    const fout = i === ROOMS.length - 1 ? 0 : smooth(seg(p, r1 - x, r1 + x * 0.4));
+    r.el.style.opacity = (fin * (1 - fout)).toFixed(3);
+    const t = smooth(seg(p, r0 - x, r1 + x * 0.4));
+    const sc = i === 0 ? 1.34 - 0.24 * t : 1.04 + 0.12 * t;   // the first room arrives through the glass
+    const dx = (i % 2 ? -1 : 1) * 1.6 * t;
+    r.el.querySelectorAll('img').forEach(img => img.style.transform = `scale(${sc.toFixed(4)}) translateX(${dx.toFixed(2)}%)`);
+    r.bar.style.transform = `scaleX(${seg(p, r0, r1).toFixed(3)})`;
+    if (p >= r0 - x * 0.3) cur = i;
   });
-  if (room !== shownRoom) {
-    shownRoom = room;
-    $('rname').textContent = ROOMS[room].name; $('rtext').textContent = ROOMS[room].text;
-    chips.forEach((c, i) => c.classList.toggle('on', i === room));
+  if (cur !== shown) {
+    shown = cur;
+    const r = ROOMS[cur];
+    $('rk').textContent = `${String(cur + 1).padStart(2, '0')} / ${String(ROOMS.length).padStart(2, '0')} · ${r.area} m²`;
+    $('rname').textContent = r.name; $('rtext').textContent = r.text;
+    ROOMS.forEach((q, i) => { planRects[i].classList.toggle('on', i === cur); planLabels[i].classList.toggle('on', i === cur); q.stop.classList.toggle('on', i === cur); });
+    r.stop.scrollIntoView({ block: 'nearest' });
+    const [x, y, deg] = r.cam, A = deg * Math.PI / 180, L = 3.2, W = 0.55;
+    cam.setAttribute('cx', x); cam.setAttribute('cy', y);
+    cone.setAttribute('d', `M${x},${y} L${x + L * Math.cos(A - W)},${y + L * Math.sin(A - W)} L${x + L * Math.cos(A + W)},${y + L * Math.sin(A + W)} Z`);
   }
 }
 function tick() {
-  const t = progress();
+  const t = scrollP();
   cur += (t - cur) * 0.12;
-  if (Math.abs(t - cur) < 0.0004) cur = t;
+  if (Math.abs(t - cur) < 0.0003) cur = t;
   frame(cur);
   requestAnimationFrame(tick);
 }
-setFloor(42);
 requestAnimationFrame(tick);
 </script>
 </body>
