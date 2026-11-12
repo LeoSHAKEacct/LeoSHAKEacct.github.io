@@ -54,6 +54,7 @@ button { font: inherit; color: inherit; }
 .pills { display: flex; gap: 8px; }
 .pill { cursor: pointer; font: 600 11.5px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(11,18,32,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .pill.solid { background: var(--sky); color: var(--night); border-color: var(--sky); }
+.pill { white-space: nowrap; }
 .pill[hidden] { display: none; }
 .pill:focus-visible, .btn:focus-visible, .dn button:focus-visible, .stop:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
 
@@ -83,9 +84,7 @@ button { font: inherit; color: inherit; }
 .stage.in .inside { pointer-events: auto; }
 .view { position: relative; overflow: hidden; }
 .view .r { position: absolute; inset: 0; opacity: 0; }
-.view img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 55%; transition: opacity .9s ease; }
-.view img.night { opacity: 0; }
-.stage.isnight .view img.night { opacity: 1; }
+.view img { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; will-change: transform; }
 .view::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(0deg, rgba(5,8,15,.85) 0%, rgba(5,8,15,0) 36%), linear-gradient(180deg, rgba(5,8,15,.55) 0%, rgba(5,8,15,0) 18%); }
 .roomcap { position: absolute; z-index: 2; left: max(28px, env(safe-area-inset-left, 0px)); right: calc(min(400px, 31vw) + 28px); bottom: 78px; }
 .roomcap .k { font: 600 11px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--glow); font-variant-numeric: tabular-nums; }
@@ -114,6 +113,7 @@ button { font: inherit; color: inherit; }
 .plan .lb { fill: var(--sky-dim); font: 500 .5px var(--body); text-anchor: middle; dominant-baseline: central; letter-spacing: .02em; }
 .plan .lb.on { fill: var(--sky); }
 .plan .cam { fill: var(--glow); }
+.plan .route { fill: none; stroke: var(--glow); stroke-width: .07; stroke-dasharray: .28 .22; opacity: .6; }
 .plan .cone { fill: var(--glow); opacity: .32; }
 .plan .bay { fill: #8fc3e8; font: 600 .42px var(--body); letter-spacing: .14em; text-anchor: middle; }
 .stops { list-style: none; margin: 0; padding: 0; overflow: auto; min-height: 0; border-top: 1px solid var(--line); }
@@ -149,6 +149,7 @@ button { font: inherit; color: inherit; }
   .info { margin-top: 0; }
   .brand small, .pills .pill:not(.solid):not(#back) { display: none; }
   .inside { grid-template-columns: minmax(0, 1fr); }
+  .stage.in .pills .pill.solid { display: none; }
   .plan { position: absolute; z-index: 3; top: 64px; right: max(12px, env(safe-area-inset-right, 0px)); width: 46vw; max-width: 220px; padding: 10px; gap: 6px; border: 1px solid var(--line); border-radius: 10px; background: rgba(17,26,44,.86); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); grid-template-rows: auto auto; }
   .plan .ph b { font-size: 14px; }
   .plan .ph span, .stops { display: none; }
@@ -188,10 +189,6 @@ button { font: inherit; color: inherit; }
       </div>
       <div class="vctl">
         <div class="progress" id="progress" aria-hidden="true"></div>
-        <div class="dn" role="group" aria-label="Time of day">
-          <button type="button" id="day" aria-pressed="true">Day</button>
-          <button type="button" id="night" aria-pressed="false">Night</button>
-        </div>
       </div>
     </div>
 
@@ -254,16 +251,18 @@ button { font: inherit; color: inherit; }
 /* ---------- the one residence ---------- */
 const FLOOR = 42;
 // plan in metres: x east, y south (bay side at the bottom). cam = [x, y, view direction in degrees, 0 = east, 90 = south]
+// pan: which side of the panorama the camera starts at and leaves by (0 = left, .5 = centre, 1 = right)
+// path: drone positions on the plan [x, y, heading] at the start and end of the room
 const ROOMS = [
-  { id: 'entry',   name: 'Entry gallery', area: 22, rect: [5.5, 0, 6.5, 3.5],  cam: [8.8, 0.8, 90],   text: 'Your own front door opens onto a gallery that leads the eye straight out to the water.' },
-  { id: 'great',   name: 'Great room',    area: 42, rect: [5.5, 3.5, 6.5, 6.5], cam: [11.4, 4.3, 135], text: 'Corner glass on two sides, a stone fireplace and the whole bay in front of you.' },
-  { id: 'dining',  name: 'Dining room',   area: 23, rect: [12, 3.5, 3.5, 6.5],  cam: [13.75, 4.1, 90], text: 'A table for eight under a sculpted brass chandelier, between the kitchen and the view.' },
-  { id: 'kitchen', name: 'Kitchen',       area: 23, rect: [15.5, 3.5, 3.5, 6.5], cam: [16.2, 4.2, 82], text: 'A six-metre island in honed marble, oak joinery floor to ceiling and brass pendants.' },
-  { id: 'terrace', name: 'Terrace',       area: 34, rect: [5.5, 10, 13.5, 2.5], cam: [18.3, 11.3, 180], text: 'Thirty-four square metres of travertine and olive trees, open to the sunset.', outside: true },
-  { id: 'study',   name: 'Study',         area: 12, rect: [12, 0, 3.5, 3.5],    cam: [13.4, 3.0, -80], text: 'Oak shelving wall to wall and a desk that looks over the city.' },
-  { id: 'guest',   name: 'Guest bedroom', area: 12, rect: [15.5, 0, 3.5, 3.5],  cam: [17.2, 3.1, -95], text: 'A calm room for guests, with its own city view and a writing desk.' },
-  { id: 'bedroom', name: 'Primary suite', area: 33, rect: [0, 4, 5.5, 6],       cam: [4.9, 4.6, 125],  text: 'Wake up facing the water, with an oak headboard wall and sheer curtains.' },
-  { id: 'bath',    name: 'Primary bath',  area: 13, rect: [0, 0, 3.2, 4],       cam: [2.9, 2.0, 180],  text: 'A stone soaking tub set against the glass, a double marble vanity and a walk-in shower.' },
+  { id: 'entry',   name: 'Entry gallery', area: 22, rect: [5.5, 0, 6.5, 3.5],  pan: [0, 1],    path: [[8.8, 0.7, 90], [10.9, 1.9, 20]],  text: 'Your own front door opens onto a travertine gallery that leads straight out to the water.' },
+  { id: 'study',   name: 'Study',         area: 12, rect: [12, 0, 3.5, 3.5],   pan: [0, 1],    path: [[12.6, 1.8, -40], [15.0, 1.8, 0]], text: 'Oak shelving wall to wall and a desk that looks over the city.' },
+  { id: 'guest',   name: 'Guest bedroom', area: 12, rect: [15.5, 0, 3.5, 3.5], pan: [0, 1],    path: [[16.0, 1.7, -30], [17.4, 3.1, 80]], text: 'A calm room for guests with its own city view, opening through to the kitchen.' },
+  { id: 'kitchen', name: 'Kitchen',       area: 23, rect: [15.5, 3.5, 3.5, 6.5], pan: [1, 0],  path: [[17.4, 4.4, 90], [16.0, 6.6, 175]], text: 'A six-metre island in honed marble, oak joinery floor to ceiling and the bay behind it.' },
+  { id: 'dining',  name: 'Dining room',   area: 23, rect: [12, 3.5, 3.5, 6.5], pan: [1, 0],    path: [[15.0, 6.6, 120], [12.4, 6.6, 180]], text: 'A table for eight under a sculpted brass chandelier, between the kitchen and the view.' },
+  { id: 'great',   name: 'Great room',    area: 42, rect: [5.5, 3.5, 6.5, 6.5], pan: [1, .5],  path: [[11.5, 6.0, 160], [8.8, 9.2, 90]],  text: 'A stone fireplace, a long linen sofa and glass doors that slide away onto the terrace.' },
+  { id: 'terrace', name: 'Terrace',       area: 34, rect: [0, 10, 19, 2.5],    pan: [0, .5],   path: [[8.8, 11.2, 180], [3.2, 11.2, 180]], text: 'Thirty-four square metres of travertine and olive trees along the whole bay front.', outside: true },
+  { id: 'bedroom', name: 'Primary suite', area: 33, rect: [0, 4, 5.5, 6],      pan: [0, 1],    path: [[2.8, 9.2, 200], [1.7, 4.9, 250]], text: 'Wake up facing the water, with an oak headboard wall and the terrace one step away.' },
+  { id: 'bath',    name: 'Primary bath',  area: 13, rect: [0, 0, 3.2, 4],      pan: [0, 1],    path: [[1.6, 3.4, 220], [1.8, 1.6, 250]], text: 'A stone soaking tub set against the glass, a double marble vanity and a walk-in shower.' },
 ];
 const WALKIN = [3.2, 0, 2.3, 4];
 
@@ -302,8 +301,8 @@ const el = (tag, attrs, parent = svg) => { const e = document.createElementNS(NS
 const planRects = [], planLabels = [];
 ROOMS.forEach((r, i) => {
   const d = document.createElement('div'); d.className = 'r';
-  d.innerHTML = `<img class="day" src="${r.id}.jpg" alt=""><img class="night" src="${r.id}-night.jpg" alt="">`;
-  view.appendChild(d); r.el = d;
+  d.innerHTML = `<img src="p-${r.id}.jpg" alt="">`;
+  view.appendChild(d); r.el = d; r.img = d.firstChild;
   const [x, y, w, h] = r.rect;
   planRects[i] = el('rect', { x, y, width: w, height: h, class: r.outside ? 'out' : 'rm' });
   const t = el('text', { x: x + w / 2, y: y + h / 2 + (r.id === 'entry' ? 0.5 : 0), class: 'lb' }); t.textContent = r.name; planLabels[i] = t;
@@ -316,7 +315,8 @@ el('line', { x1: 19, y1: 3.5, x2: 19, y2: 10, class: 'glass' });
 el('line', { x1: 0, y1: 4.5, x2: 0, y2: 10, class: 'glass' });
 el('line', { x1: 12.4, y1: 0, x2: 18.6, y2: 0, class: 'glass' });
 el('line', { x1: 8.3, y1: 0, x2: 9.4, y2: 0, class: 'door' });           // front door
-el('text', { x: 12.25, y: 13.4, class: 'bay' }).textContent = 'THE BAY';
+el('text', { x: 9.5, y: 13.4, class: 'bay' }).textContent = 'THE BAY';
+el('polyline', { class: 'route', points: ROOMS.flatMap(r => r.path.map(([x, y]) => `${x},${y}`)).join(' ') });
 const cone = el('path', { class: 'cone' });
 const cam = el('circle', { r: 0.32, class: 'cam' });
 
@@ -340,12 +340,6 @@ $('enter').addEventListener('click', () => goTo(roomStart(0) + 0.01));
 hit.addEventListener('click', () => goTo(roomStart(0) + 0.01));
 $('back').addEventListener('click', () => goTo(0));
 $('again').addEventListener('click', () => goTo(0));
-function setNight(on) {
-  stage.classList.toggle('isnight', on);
-  $('day').setAttribute('aria-pressed', String(!on)); $('night').setAttribute('aria-pressed', String(on));
-}
-$('day').addEventListener('click', () => setNight(false));
-$('night').addEventListener('click', () => setNight(true));
 
 /* ---------- the film ---------- */
 let cur = 0, shown = -1;
@@ -373,29 +367,47 @@ function frame(p) {
   stage.classList.toggle('entering', p > RISE * 0.6 && !isIn);
   $('back').hidden = !isIn; $('detLink').hidden = isIn;
 
-  let cur = 0;
+  // panoramas: glide across each room toward its exit, then fly through into the next room
+  const AR = 21 / 9;
+  const vw2 = view.clientWidth, vh2 = view.clientHeight;
+  const baseW = Math.max(vw2, vh2 * AR), baseH = baseW / AR;
+  const sideX = f => vw2 * (0.15 + 0.7 * f);
+  let curRoom = 0, camPos = ROOMS[0].path[0];
+  const lerp = (u, v, t) => u + (v - u) * t;
   ROOMS.forEach((r, i) => {
-    const r0 = roomStart(i), r1 = r0 + STEP, x = STEP * 0.22;
-    const fin = i === 0 ? 1 : smooth(seg(p, r0 - x, r0 + x * 0.4));
-    const fout = i === ROOMS.length - 1 ? 0 : smooth(seg(p, r1 - x, r1 + x * 0.4));
-    r.el.style.opacity = (fin * (1 - fout)).toFixed(3);
-    const t = smooth(seg(p, r0 - x, r1 + x * 0.4));
-    const sc = i === 0 ? 1.34 - 0.24 * t : 1.04 + 0.12 * t;   // the first room arrives through the glass
-    const dx = (i % 2 ? -1 : 1) * 1.6 * t;
-    r.el.querySelectorAll('img').forEach(img => img.style.transform = `scale(${sc.toFixed(4)}) translateX(${dx.toFixed(2)}%)`);
+    const r0 = roomStart(i), r1 = r0 + STEP, fly = STEP * 0.24;
+    const glide = smooth(seg(p, r0, r1 - fly));                 // across the room
+    const out = i === ROOMS.length - 1 ? 0 : smooth(seg(p, r1 - fly, r1 + fly * 0.35));   // fly through the exit
+    const inn = i === 0 ? 1 - smooth(seg(p, CROSS - 0.01, r0 + fly)) : 1 - smooth(seg(p, r0 - fly, r0 + fly * 0.6));  // arriving
+    const op = i === 0 ? 1 - smooth(seg(p, r1 - fly * 0.5, r1 + fly * 0.2)) : smooth(seg(p, r0 - fly * 0.55, r0 - fly * 0.05)) * (i === ROOMS.length - 1 ? 1 : 1 - smooth(seg(p, r1 - fly * 0.5, r1 + fly * 0.2)));
+    r.el.style.opacity = op.toFixed(3);
+    if (op > 0.001) {
+      const pan = lerp(r.pan[0], r.pan[1], glide);
+      const tx = -(baseW - vw2) * pan, ty = (vh2 - baseH) / 2;
+      const zIn = 1 + (i === 0 ? 0.34 : 0.26) * inn, zOut = 1 + 0.9 * out * out;
+      const z = 1.03 * zIn * zOut;
+      const fx = out > 0 ? sideX(r.pan[1]) : sideX(r.pan[0]), fy = vh2 * 0.52;
+      r.img.style.width = baseW + 'px'; r.img.style.height = baseH + 'px';
+      r.img.style.transform = `translate(${fx.toFixed(1)}px, ${fy.toFixed(1)}px) scale(${z.toFixed(4)}) translate(${(tx - fx).toFixed(1)}px, ${(ty - fy).toFixed(1)}px)`;
+    }
     r.bar.style.transform = `scaleX(${seg(p, r0, r1).toFixed(3)})`;
-    if (p >= r0 - x * 0.3) cur = i;
+    if (p >= r0 - fly * 0.3) {
+      curRoom = i;
+      const [a0, a1] = r.path, nxt = ROOMS[i + 1];
+      if (out > 0 && nxt) { const q = out; camPos = [lerp(a1[0], nxt.path[0][0], q), lerp(a1[1], nxt.path[0][1], q), lerp(a1[2], nxt.path[0][2], q)]; }
+      else camPos = [lerp(a0[0], a1[0], glide), lerp(a0[1], a1[1], glide), lerp(a0[2], a1[2], glide)];
+    }
   });
-  if (cur !== shown) {
-    shown = cur;
-    const r = ROOMS[cur];
-    $('rk').textContent = `${String(cur + 1).padStart(2, '0')} / ${String(ROOMS.length).padStart(2, '0')} · ${r.area} m²`;
+  const [x, y, deg] = camPos, A = deg * Math.PI / 180, L = 3.0, W = 0.6;
+  cam.setAttribute('cx', x.toFixed(2)); cam.setAttribute('cy', y.toFixed(2));
+  cone.setAttribute('d', `M${x},${y} L${x + L * Math.cos(A - W)},${y + L * Math.sin(A - W)} L${x + L * Math.cos(A + W)},${y + L * Math.sin(A + W)} Z`);
+  if (curRoom !== shown) {
+    shown = curRoom;
+    const r = ROOMS[curRoom];
+    $('rk').textContent = `${String(curRoom + 1).padStart(2, '0')} / ${String(ROOMS.length).padStart(2, '0')} · ${r.area} m²`;
     $('rname').textContent = r.name; $('rtext').textContent = r.text;
-    ROOMS.forEach((q, i) => { planRects[i].classList.toggle('on', i === cur); planLabels[i].classList.toggle('on', i === cur); q.stop.classList.toggle('on', i === cur); });
+    ROOMS.forEach((q, i) => { planRects[i].classList.toggle('on', i === curRoom); planLabels[i].classList.toggle('on', i === curRoom); q.stop.classList.toggle('on', i === curRoom); });
     r.stop.scrollIntoView({ block: 'nearest' });
-    const [x, y, deg] = r.cam, A = deg * Math.PI / 180, L = 3.2, W = 0.55;
-    cam.setAttribute('cx', x); cam.setAttribute('cy', y);
-    cone.setAttribute('d', `M${x},${y} L${x + L * Math.cos(A - W)},${y + L * Math.sin(A - W)} L${x + L * Math.cos(A + W)},${y + L * Math.sin(A + W)} Z`);
   }
 }
 function tick() {
