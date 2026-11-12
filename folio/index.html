@@ -1,0 +1,220 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Maison Folio</title>
+<meta name="description" content="Maison Folio: furniture that starts on paper. A pop-up book film for an interior design shop, by worldmatters.">
+<meta property="og:title" content="Maison Folio · worldmatters">
+<meta property="og:description" content="Furniture that starts on paper. Scroll to open the book.">
+<meta property="og:image" content="poster.jpg">
+<link rel="icon" href="data:,">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;1,400&family=Manrope:wght@400;500;600&display=swap">
+<style>
+/* Layout: one sticky film stage scrubbed by scroll, captions laid on the page like a catalogue, then the collection.
+   Single deliberate theme: linen paper, ink, oak and brass, the materials of the book itself. */
+:root {
+  --paper: #efe8dc;      /* linen page */
+  --paper-2: #e6dccb;    /* deeper page, cards */
+  --ink: #26221c;        /* text */
+  --ink-2: #6b6255;      /* secondary text */
+  --rule: #cbbfaa;       /* hairlines */
+  --brass: #9a7438;      /* the one accent */
+  --display: "Cormorant Garamond", "Cormorant", Garamond, "Times New Roman", serif;
+  --body: "Manrope", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { background: var(--paper); }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 400 16px/1.65 var(--body); }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--paper); }
+a { color: inherit; }
+
+.tour { position: relative; height: 560vh; }
+.stage { position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100svh - env(safe-area-inset-top, 0px)); overflow: hidden; background: #d9cfbf; }
+.stage video, .stage .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.stage .poster { transition: opacity .6s; }
+.stage.ready .poster { opacity: 0; }
+.veil { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(239,232,220,.92) 0%, rgba(239,232,220,.55) 34%, rgba(239,232,220,0) 58%); }
+
+.bar { position: absolute; inset: 0 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 16px; padding-block: 20px; padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); z-index: 2; }
+.mark { font: 500 22px/1 var(--display); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; }
+.mark i { font-style: italic; text-transform: none; letter-spacing: 0; color: var(--brass); }
+.bar nav { display: flex; gap: 22px; font: 500 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; }
+.bar nav a { text-decoration: none; color: var(--ink); }
+.bar nav a:hover { color: var(--ink); }
+
+.cap { position: absolute; left: max(28px, env(safe-area-inset-left, 0px)); top: 50%; transform: translateY(-50%); width: min(440px, 40vw); transition: opacity .55s ease, transform .55s ease; }
+.cap.off { opacity: 0; transform: translateY(calc(-50% + 14px)); pointer-events: none; }
+.cap .no { font: 500 12px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--brass); }
+.cap h1, .cap h2 { font: 400 clamp(46px, 6.4vw, 92px)/.95 var(--display); margin: 14px 0 16px; letter-spacing: -.01em; text-wrap: balance; }
+.cap h1 em, .cap h2 em { font-style: italic; color: var(--brass); }
+.cap p { margin: 0; max-width: 34ch; color: var(--ink); }
+.cap dl { margin: 18px 0 0; display: grid; grid-template-columns: auto 1fr; gap: 6px 18px; font-size: 14px; border-top: 1px solid var(--rule); padding-top: 14px; max-width: 360px; }
+.cap dt { color: var(--ink-2); }
+.cap dd { margin: 0; font-variant-numeric: tabular-nums; }
+.cue { margin-top: 26px; display: inline-flex; align-items: center; gap: 12px; font: 500 12px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); }
+.cue i { width: 34px; height: 1px; background: var(--ink-2); transform-origin: left; animation: draw 1.8s ease-in-out infinite; }
+@keyframes draw { 0% { transform: scaleX(0) } 60% { transform: scaleX(1) } 100% { transform: scaleX(1); opacity: 0 } }
+
+.chapters { position: absolute; left: max(28px, env(safe-area-inset-left, 0px)); right: max(28px, env(safe-area-inset-right, 0px)); bottom: 26px; display: grid; grid-template-columns: 1fr 2.4fr 3fr; gap: 10px; }
+.chapters button { all: unset; cursor: pointer; display: grid; gap: 9px; font: 500 11px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--ink-2); }
+.chapters button .t { height: 2px; background: rgba(38,34,28,.16); position: relative; overflow: hidden; }
+.chapters button .t b { position: absolute; inset: 0; background: var(--ink); transform-origin: left; transform: scaleX(0); }
+.chapters button.on { color: var(--ink); }
+.chapters button:focus-visible { outline: 1px solid var(--brass); outline-offset: 6px; }
+
+.collection { padding-block: 104px 88px; padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 56px; }
+.head { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 32px; align-items: end; border-bottom: 1px solid var(--rule); padding-bottom: 28px; }
+.head h3 { font: 400 clamp(40px, 5vw, 68px)/1 var(--display); margin: 0; text-wrap: balance; }
+.head p { margin: 0; color: var(--ink-2); max-width: 46ch; justify-self: end; }
+.pieces { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
+.piece { display: grid; gap: 18px; min-width: 0; }
+.piece .img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--paper-2); }
+.piece .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .5s ease, transform 1.2s ease; }
+.piece .img img + img { opacity: 0; }
+.piece:hover .img img + img, .piece:focus-within .img img + img { opacity: 1; }
+.piece:hover .img img { transform: scale(1.03); }
+.piece .row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.piece h4 { font: 400 34px/1 var(--display); margin: 0; }
+.piece h4 small { font: 500 11px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--brass); margin-right: 12px; vertical-align: middle; }
+.piece .mat { color: var(--ink-2); font-size: 14px; }
+.piece dl { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--rule); }
+.piece dl div { padding: 12px 12px 0 0; }
+.piece dt { font: 500 11px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink-2); }
+.piece dd { margin: 8px 0 0; font-size: 15px; font-variant-numeric: tabular-nums; }
+.enquire { justify-self: start; display: inline-flex; gap: 10px; align-items: center; font: 600 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; text-decoration: none; color: var(--paper); background: var(--ink); padding: 15px 20px; }
+.enquire:hover { background: var(--brass); }
+.enquire:focus-visible { outline: 2px solid var(--brass); outline-offset: 3px; }
+.foot { display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; border-top: 1px solid var(--rule); padding-top: 22px; font-size: 13px; color: var(--ink-2); }
+.again { all: unset; cursor: pointer; font: 600 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); border-bottom: 1px solid var(--ink); padding-bottom: 4px; }
+.again:focus-visible { outline: 1px solid var(--brass); outline-offset: 4px; }
+
+@media (max-width: 760px) {
+  .tour { height: 480vh; }
+  .veil { background: linear-gradient(0deg, rgba(239,232,220,.95) 0%, rgba(239,232,220,.7) 34%, rgba(239,232,220,0) 56%); }
+  .cap { top: auto; bottom: 74px; transform: none; width: auto; right: max(28px, env(safe-area-inset-right, 0px)); }
+  .cap.off { transform: translateY(14px); }
+  .cap h1, .cap h2 { font-size: 50px; margin: 10px 0 10px; }
+  .cap dl { display: none; }
+  .bar nav { display: none; }
+  .chapters { grid-template-columns: 1fr 1fr 1fr; }
+  .head { grid-template-columns: minmax(0, 1fr); }
+  .head p { justify-self: start; }
+  .pieces { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) { .cue i { animation: none; } * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+<section class="tour" id="tour" aria-label="Maison Folio film">
+  <div class="stage" id="stage">
+    <img class="poster" src="poster.jpg" alt="A closed linen book on a travertine surface">
+    <video id="film" src="film.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+    <div class="veil"></div>
+
+    <div class="bar">
+      <a class="mark" href="#tour">Maison <i>Folio</i></a>
+      <nav aria-label="Sections"><a href="#collection">Collection</a><a href="https://worldmatters.shakeapp.today/">worldmatters</a></nav>
+    </div>
+
+    <div class="cap" id="cap0">
+      <div class="no">Collection 2026</div>
+      <h1>Furniture that starts <em>on paper</em>.</h1>
+      <p>Every piece begins as a drawing in our book. Scroll to open it.</p>
+      <div class="cue"><i></i>Scroll to open</div>
+    </div>
+    <div class="cap off" id="cap1">
+      <div class="no">No. 01 · Coffee table</div>
+      <h2>Arca</h2>
+      <p>A disc of Calacatta marble resting on a crossed base of brushed brass.</p>
+      <dl><dt>Top</dt><dd>Calacatta marble, honed</dd><dt>Base</dt><dd>Solid brass, brushed</dd><dt>Size</dt><dd>Ø 110 × H 38 cm</dd></dl>
+    </div>
+    <div class="cap off" id="cap2">
+      <div class="no">No. 02 · Lounge chair</div>
+      <h2>Dune</h2>
+      <p>One long curve of ivory bouclé, carried on a frame of solid white oak.</p>
+      <dl><dt>Seat</dt><dd>Ivory wool bouclé</dd><dt>Frame</dt><dd>Solid white oak, oiled</dd><dt>Size</dt><dd>W 72 × D 110 × H 82 cm</dd></dl>
+    </div>
+
+    <div class="chapters" id="chapters">
+      <button type="button" data-t="0"><span>Cover</span><span class="t"><b></b></span></button>
+      <button type="button" data-t="3.2"><span>Arca</span><span class="t"><b></b></span></button>
+      <button type="button" data-t="10.4"><span>Dune</span><span class="t"><b></b></span></button>
+    </div>
+  </div>
+</section>
+
+<section class="collection" id="collection">
+  <div class="wrap">
+    <div class="head">
+      <h3>The collection</h3>
+      <p>Each piece is made to order in small runs. Hover a piece to see it leave the page.</p>
+    </div>
+    <div class="pieces">
+      <article class="piece">
+        <div class="img"><img src="table.jpg" alt="Arca marble coffee table on the open book"><img src="table-popup.jpg" alt="" aria-hidden="true"></div>
+        <div class="row"><h4><small>No. 01</small>Arca</h4><span class="mat">Calacatta marble · brushed brass</span></div>
+        <dl><div><dt>Diameter</dt><dd>110 cm</dd></div><div><dt>Height</dt><dd>38 cm</dd></div><div><dt>Lead time</dt><dd>8 weeks</dd></div></dl>
+        <a class="enquire" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20enquire%20about%20the%20Arca%20coffee%20table%20from%20Maison%20Folio" target="_blank" rel="noopener">Enquire about Arca</a>
+      </article>
+      <article class="piece">
+        <div class="img"><img src="chair.jpg" alt="Dune boucl&eacute; lounge chair on the open book"><img src="chair-detail.jpg" alt="" aria-hidden="true"></div>
+        <div class="row"><h4><small>No. 02</small>Dune</h4><span class="mat">Ivory bouclé · white oak</span></div>
+        <dl><div><dt>Width</dt><dd>72 cm</dd></div><div><dt>Depth</dt><dd>110 cm</dd></div><div><dt>Lead time</dt><dd>10 weeks</dd></div></dl>
+        <a class="enquire" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20enquire%20about%20the%20Dune%20lounge%20chair%20from%20Maison%20Folio" target="_blank" rel="noopener">Enquire about Dune</a>
+      </article>
+    </div>
+    <div class="foot">
+      <button class="again" id="again" type="button">Open the book again</button>
+      <span>Concept for an interior design shop, by <a href="https://worldmatters.shakeapp.today/">worldmatters</a>. Pieces, sizes and lead times are illustrative.</span>
+    </div>
+  </div>
+</section>
+
+<script>
+const tour = document.getElementById('tour'), stage = document.getElementById('stage'), film = document.getElementById('film');
+const caps = [document.getElementById('cap0'), document.getElementById('cap1'), document.getElementById('cap2')];
+const chapters = [...document.querySelectorAll('#chapters button')];
+// caption windows in film seconds: cover, table, chair
+const WINDOWS = [[0, 2.6], [3.2, 9.0], [10.4, 99]];
+const STARTS = [0, 3.2, 10.4];
+let duration = 19.29, cur = 0;
+
+film.addEventListener('loadeddata', () => stage.classList.add('ready'));
+film.addEventListener('loadedmetadata', () => { if (isFinite(film.duration) && film.duration > 1) duration = film.duration; });
+const unlock = () => { const p = film.play(); if (p) p.then(() => film.pause()).catch(() => {}); };
+window.addEventListener('touchstart', unlock, { once: true, passive: true });
+window.addEventListener('pointerdown', unlock, { once: true });
+
+const span = () => tour.offsetHeight - stage.offsetHeight;
+const progress = () => Math.min(1, Math.max(0, -tour.getBoundingClientRect().top / span()));
+function goTo(t) {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: tour.offsetTop + span() * (t / duration) + 2, behavior: reduce ? 'auto' : 'smooth' });
+}
+chapters.forEach(b => b.addEventListener('click', () => goTo(parseFloat(b.dataset.t))));
+document.getElementById('again').addEventListener('click', () => goTo(0));
+
+function render() {
+  const target = progress() * duration;
+  cur += (target - cur) * 0.16;
+  if (Math.abs(target - cur) < 0.002) cur = target;
+  if (film.readyState >= 1 && !film.seeking && Math.abs(film.currentTime - cur) > 0.015) film.currentTime = Math.min(cur, duration - 0.05);
+  caps.forEach((c, i) => c.classList.toggle('off', !(cur >= WINDOWS[i][0] && cur < WINDOWS[i][1])));
+  chapters.forEach((b, i) => {
+    const a = STARTS[i], z = i + 1 < STARTS.length ? STARTS[i + 1] : duration;
+    const f = Math.min(1, Math.max(0, (cur - a) / (z - a)));
+    b.querySelector('b').style.transform = `scaleX(${f})`;
+    b.classList.toggle('on', cur >= a && cur < z);
+  });
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
