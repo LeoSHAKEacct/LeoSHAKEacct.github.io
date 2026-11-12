@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Marlow Bay</title>
-<meta name="description" content="Marlow Bay: a 60-storey residential tower on the water. Move over the tower, pick a floor and step inside. Concept by worldmatters.">
+<meta name="description" content="Marlow Bay: a 60-storey residential tower on the water. One floor lights up, the camera flies in through the window and walks you through the home. Concept by worldmatters.">
 <meta property="og:title" content="Marlow Bay · worldmatters">
 <meta property="og:description" content="Move over the tower. Step inside.">
 <meta property="og:image" content="tower-sm.jpg">
@@ -13,8 +13,8 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:ital,opsz,wght@0,6..96,400;0,6..96,500;1,6..96,400&family=Hanken+Grotesk:wght@400;500;600&display=swap">
 <style>
-/* Layout: the tower photograph is the interface. A sticky stage zooms up the facade as you scroll; hover or tap a floor
-   to read it, click to step inside. Single deliberate theme: blue-hour sky, warm window light. */
+/* Layout: one sticky stage is the whole film. Scroll rises up the tower to a glowing floor, pushes in through its window,
+   then walks through the residence room by room. Single deliberate theme: blue-hour sky, warm window light. */
 :root {
   --night: #0b1220;        /* page ground, deep blue hour */
   --night-2: #131c2f;      /* panels */
@@ -34,25 +34,51 @@ a { color: inherit; }
 button { font: inherit; color: inherit; }
 
 /* ---------- stage ---------- */
-.tour { position: relative; height: 340vh; }
+.tour { position: relative; height: 900vh; }
 .stage { position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100svh - env(safe-area-inset-top, 0px)); overflow: hidden; background: #1b2a4a; }
 .world { position: absolute; left: 0; top: 0; width: 1600px; height: 904px; transform-origin: 0 0; will-change: transform; }
 .world img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .hit { position: absolute; cursor: pointer; }
-.band { position: absolute; left: 0; right: 0; height: 0; opacity: 0; transition: opacity .2s; pointer-events: none;
-  background: rgba(231,191,124,.34); box-shadow: 0 0 0 1px rgba(231,191,124,.9), 0 0 22px rgba(231,191,124,.55); }
-.band.on { opacity: 1; }
+.band { position: absolute; left: -2px; right: -2px; height: 0; pointer-events: none;
+  background: rgba(255,214,150,.42); box-shadow: 0 0 0 1px rgba(255,220,160,.95), 0 0 18px 4px rgba(255,200,120,.7), 0 0 60px 12px rgba(255,190,110,.35);
+  animation: breathe 2.4s ease-in-out infinite; }
+@keyframes breathe { 0%,100% { opacity: .78; } 50% { opacity: 1; } }
 .shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(8,13,25,.78) 0%, rgba(8,13,25,.35) 30%, rgba(8,13,25,0) 46%, rgba(8,13,25,0) 64%, rgba(8,13,25,.5) 100%); }
+.flash { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, rgba(255,222,170,1) 0%, rgba(255,205,140,.85) 40%, rgba(255,190,120,0) 75%); opacity: 0; }
 
-.bar { position: absolute; inset: 0 0 auto; z-index: 3; display: flex; justify-content: space-between; align-items: center; gap: 16px;
+/* inside the residence */
+.inside { position: absolute; inset: 0; opacity: 0; pointer-events: none; background: #05080f; }
+.inside .r { position: absolute; inset: 0; opacity: 0; overflow: hidden; }
+.inside img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: 50% 55%; transition: opacity .9s ease; }
+.inside img.night { opacity: 0; }
+.stage.isnight .inside img.night { opacity: 1; }
+.inside::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(5,8,15,.82) 0%, rgba(5,8,15,0) 34%), linear-gradient(180deg, rgba(5,8,15,.55) 0%, rgba(5,8,15,0) 20%); pointer-events: none; }
+.roomcap { position: absolute; z-index: 3; left: max(28px, env(safe-area-inset-left, 0px)); bottom: 84px; opacity: 0; pointer-events: none; transition: opacity .4s; }
+.roomcap .k { font: 600 11px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--glow); }
+.roomcap h2 { font: 400 clamp(40px, 6vw, 84px)/1 var(--display); margin: 10px 0 8px; }
+.roomcap p { margin: 0; max-width: 42ch; color: var(--sky); }
+.controls { position: absolute; z-index: 3; left: max(28px, env(safe-area-inset-left, 0px)); right: max(28px, env(safe-area-inset-right, 0px)); bottom: 24px; display: flex; justify-content: space-between; align-items: center; gap: 12px; opacity: 0; pointer-events: none; transition: opacity .4s; }
+.stage.in .controls, .stage.in .roomcap { opacity: 1; }
+.stage.in .controls { pointer-events: auto; }
+.rooms { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { cursor: pointer; border: 1px solid var(--line); background: rgba(11,18,32,.55); border-radius: 999px; padding: 9px 13px; font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--sky-dim); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.chip.on { color: var(--night); background: var(--sky); border-color: var(--sky); }
+.dn { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; background: rgba(11,18,32,.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.dn button { cursor: pointer; border: 0; background: transparent; border-radius: 999px; padding: 8px 14px; font: 600 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--sky-dim); }
+.dn button[aria-pressed="true"] { background: var(--glow); color: #1c1307; }
+
+.bar { position: absolute; inset: 0 0 auto; z-index: 4; display: flex; justify-content: space-between; align-items: center; gap: 16px;
   padding-block: 18px; padding-left: max(28px, env(safe-area-inset-left, 0px)); padding-right: max(28px, env(safe-area-inset-right, 0px)); }
 .brand { font: 400 22px/1 var(--display); letter-spacing: .02em; text-decoration: none; }
 .brand small { font: 500 10.5px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--sky-dim); margin-left: 12px; }
 .pills { display: flex; gap: 8px; }
-.pill { font: 600 11.5px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(11,18,32,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+.pill { cursor: pointer; font: 600 11.5px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; text-decoration: none; padding: 10px 14px; border-radius: 999px; border: 1px solid var(--line); background: rgba(11,18,32,.5); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
 .pill.solid { background: var(--sky); color: var(--night); border-color: var(--sky); }
-.pill:focus-visible, .btn:focus-visible, .tab:focus-visible, .dn button:focus-visible, .x:focus-visible, .step:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
+.pill[hidden] { display: none; }
+.pill:focus-visible, .btn:focus-visible, .chip:focus-visible, .dn button:focus-visible, .step:focus-visible { outline: 2px solid var(--glow); outline-offset: 2px; }
 
+.outside { transition: opacity .35s; }
+.stage.in .outside, .stage.entering .outside { opacity: 0; pointer-events: none; }
 .copy { position: absolute; z-index: 2; left: max(28px, env(safe-area-inset-left, 0px)); top: 50%; transform: translateY(-50%); width: min(400px, 34vw); }
 .eyebrow { font: 600 11px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--glow); }
 .copy h1 { font: 400 clamp(40px, 5vw, 72px)/1.02 var(--display); margin: 16px 0 16px; text-wrap: balance; }
@@ -89,45 +115,25 @@ button { font: inherit; color: inherit; }
 .types span { color: var(--sky-dim); font-size: 14px; font-variant-numeric: tabular-nums; }
 .note { font-size: 13px; color: var(--sky-dim); border-top: 1px solid var(--line); padding-top: 20px; display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
 
-/* ---------- residence viewer ---------- */
-.viewer { position: fixed; inset: 0; z-index: 40; background: #05080f; display: grid; grid-template-rows: auto 1fr auto; opacity: 0; pointer-events: none; transition: opacity .35s; }
-.viewer.open { opacity: 1; pointer-events: auto; }
-.vhead { display: flex; justify-content: space-between; align-items: center; gap: 12px; padding-block: calc(14px + env(safe-area-inset-top, 0px)) 14px; padding-left: max(22px, env(safe-area-inset-left, 0px)); padding-right: max(22px, env(safe-area-inset-right, 0px)); z-index: 2; }
-.vhead .t { font: 400 20px/1.1 var(--display); }
-.vhead .t small { display: block; font: 600 10.5px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; color: var(--sky-dim); margin-bottom: 6px; }
-.x { cursor: pointer; width: 42px; height: 42px; border-radius: 50%; border: 1px solid var(--line); background: rgba(11,18,32,.6); font-size: 20px; line-height: 1; }
-.room { position: relative; overflow: hidden; }
-.room img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .9s ease; transform: scale(1.06); animation: drift 22s ease-in-out infinite alternate; }
-.room img.night { opacity: 0; }
-.viewer.isnight .room img.night { opacity: 1; }
-@keyframes drift { from { transform: scale(1.06) translateX(-1.2%); } to { transform: scale(1.1) translateX(1.2%); } }
-.room .label { position: absolute; left: max(22px, env(safe-area-inset-left, 0px)); top: 18px; font: 400 clamp(28px, 3.6vw, 46px)/1 var(--display); text-shadow: 0 2px 18px rgba(0,0,0,.5); }
-.vfoot { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding-block: 14px calc(14px + env(safe-area-inset-bottom, 0px)); padding-left: max(22px, env(safe-area-inset-left, 0px)); padding-right: max(22px, env(safe-area-inset-right, 0px)); }
-.tabs { display: flex; gap: 6px; flex-wrap: wrap; }
-.tab { cursor: pointer; border: 1px solid var(--line); background: transparent; border-radius: 999px; padding: 10px 14px; font: 600 11.5px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--sky-dim); }
-.tab[aria-selected="true"] { color: var(--night); background: var(--sky); border-color: var(--sky); }
-.dn { display: inline-flex; border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
-.dn button { cursor: pointer; border: 0; background: transparent; border-radius: 999px; padding: 8px 14px; font: 600 11.5px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--sky-dim); }
-.dn button[aria-pressed="true"] { background: var(--glow); color: #1c1307; }
-
 @media (max-width: 860px) {
-  .tour { height: 300vh; }
+  .tour { height: 800vh; }
   .shade { background: linear-gradient(0deg, rgba(8,13,25,.9) 0%, rgba(8,13,25,.45) 36%, rgba(8,13,25,0) 56%), linear-gradient(180deg, rgba(8,13,25,.92) 0%, rgba(8,13,25,.7) 26%, rgba(8,13,25,0) 44%); }
-  .copy { text-shadow: 0 1px 14px rgba(0,0,0,.6); }
-  .copy .hint { color: var(--sky); }
-  .copy { top: 76px; transform: none; width: auto; right: max(28px, env(safe-area-inset-right, 0px)); }
+  .copy { top: 76px; transform: none; width: auto; right: max(28px, env(safe-area-inset-right, 0px)); text-shadow: 0 1px 14px rgba(0,0,0,.6); }
   .copy h1 { font-size: 34px; margin: 10px 0 8px; }
   .copy p { display: none; }
-  .copy .hint { margin-top: 6px; }
+  .copy .hint { margin-top: 6px; color: var(--sky); }
   .floorcard { top: auto; bottom: 18px; transform: none; left: max(16px, env(safe-area-inset-left, 0px)); right: max(16px, env(safe-area-inset-right, 0px)); width: auto; display: grid; grid-template-columns: auto 1fr; gap: 12px; align-items: end; text-align: left; }
   .floorcard .n { font-size: 76px; }
-  .floorcard .lvl { display: none; }
+  .floorcard .lvl, .steps { display: none; }
   .info { margin-top: 0; }
-  .steps { justify-content: flex-start; grid-column: 1; grid-row: 1; align-self: start; display: none; }
   .brand small, .pills .pill:not(.solid) { display: none; }
+  .roomcap { bottom: 132px; right: max(28px, env(safe-area-inset-right, 0px)); }
+  .roomcap p { font-size: 14px; }
+  .roomcap h2 { font-size: 46px; }
+  .controls { flex-direction: column; align-items: flex-start; bottom: 16px; gap: 8px; }
   .types { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-@media (prefers-reduced-motion: reduce) { * { transition: none !important; animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .band { animation: none; } * { transition: none !important; } }
 </style>
 </head>
 <body>
@@ -138,37 +144,62 @@ button { font: inherit; color: inherit; }
       <img src="tower.jpg" alt="Marlow Bay, a slender 60-storey tower on the water at blue hour">
       <div class="hit" id="hit"><div class="band" id="band"></div></div>
     </div>
-    <div class="shade"></div>
+    <div class="shade outside"></div>
+    <div class="flash" id="flash"></div>
+
+    <div class="inside" id="inside" aria-hidden="true">
+      <div class="r" data-r="great"><img class="day" src="great.jpg" alt=""><img class="night" src="great-night.jpg" alt=""></div>
+      <div class="r" data-r="kitchen"><img class="day" src="kitchen.jpg" alt=""><img class="night" src="kitchen-night.jpg" alt=""></div>
+      <div class="r" data-r="bedroom"><img class="day" src="bedroom.jpg" alt=""><img class="night" src="bedroom-night.jpg" alt=""></div>
+    </div>
 
     <div class="bar">
       <a class="brand" href="#tour">Marlow Bay<small>Residences on the water</small></a>
       <div class="pills">
-        <a class="pill" href="#residences">Residences</a>
+        <button class="pill" id="back" type="button" hidden>Back to the tower</button>
+        <a class="pill" href="#residences" id="resLink">Residences</a>
         <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a viewing</a>
       </div>
     </div>
 
-    <div class="copy">
+    <div class="copy outside">
       <div class="eyebrow">Now leasing · 60 storeys</div>
       <h1>Move over the tower. <em>Step inside.</em></h1>
-      <p>Choose any floor from the 10th to the 60th and see the residence behind those windows, by day or by night.</p>
-      <div class="hint" id="hint">Hover the tower to pick a floor · scroll to rise</div>
+      <p>One floor is lit for you. Scroll and the camera rises to it, through the window and into the home.</p>
+      <div class="hint" id="hint">Hover the tower to choose another floor · scroll to enter</div>
     </div>
 
-    <div class="floorcard" aria-live="polite">
+    <div class="floorcard outside" aria-live="polite">
       <div>
-        <div class="n" id="fn">38</div>
+        <div class="n" id="fn">42</div>
         <div class="lvl">Floor</div>
         <div class="steps"><button class="step" id="down" type="button" aria-label="Floor below">−</button><button class="step" id="up" type="button" aria-label="Floor above">+</button></div>
       </div>
       <div class="info">
         <h2 id="ftype">Three-bedroom</h2>
         <dl>
-          <dt>Interior</dt><dd id="fsize">186 m²</dd>
+          <dt>Interior</dt><dd id="fsize">188 m²</dd>
           <dt>Facing</dt><dd id="fview">Bay and skyline</dd>
           <dt>Status</dt><dd><span class="status available" id="fstatus">Available</span></dd>
         </dl>
         <button class="btn" id="enter" type="button">Step inside</button>
+      </div>
+    </div>
+
+    <div class="roomcap" id="roomcap" aria-live="polite">
+      <div class="k" id="rk">Floor 42 · Three-bedroom</div>
+      <h2 id="rname">Great room</h2>
+      <p id="rtext">Seven metres of glass on two sides, a stone fireplace and the whole bay in front of you.</p>
+    </div>
+    <div class="controls">
+      <div class="rooms" id="rooms">
+        <button class="chip on" type="button" data-i="0">Great room</button>
+        <button class="chip" type="button" data-i="1">Kitchen</button>
+        <button class="chip" type="button" data-i="2">Primary suite</button>
+      </div>
+      <div class="dn" role="group" aria-label="Time of day">
+        <button type="button" id="day" aria-pressed="true">Day</button>
+        <button type="button" id="night" aria-pressed="false">Night</button>
       </div>
     </div>
   </div>
@@ -193,39 +224,27 @@ button { font: inherit; color: inherit; }
   </div>
 </section>
 
-<div class="viewer" id="viewer" role="dialog" aria-modal="true" aria-labelledby="vtitle" hidden>
-  <div class="vhead">
-    <div class="t" id="vtitle"><small id="vsub">Floor 38 · Available</small>Three-bedroom residence</div>
-    <button class="x" id="close" type="button" aria-label="Back to the tower">×</button>
-  </div>
-  <div class="room" id="room">
-    <img class="day" id="imgDay" src="great.jpg" alt="">
-    <img class="night" id="imgNight" src="great-night.jpg" alt="">
-    <div class="label" id="rlabel">Great room</div>
-  </div>
-  <div class="vfoot">
-    <div class="tabs" role="tablist" aria-label="Rooms">
-      <button class="tab" role="tab" aria-selected="true" data-r="great" type="button">Great room</button>
-      <button class="tab" role="tab" aria-selected="false" data-r="kitchen" type="button">Kitchen</button>
-      <button class="tab" role="tab" aria-selected="false" data-r="bedroom" type="button">Primary suite</button>
-    </div>
-    <div class="dn" role="group" aria-label="Time of day">
-      <button type="button" id="day" aria-pressed="true">Day</button>
-      <button type="button" id="night" aria-pressed="false">Night</button>
-    </div>
-  </div>
-</div>
-
 <script>
 /* tower geometry in image fractions (1600 × 904 world) */
 const IMG_W = 1600, IMG_H = 904;
 const T = { x0: 0.350, x1: 0.492, yTop: 0.245, yBot: 0.975 };
 const F_MIN = 10, F_MAX = 60, N = F_MAX - F_MIN + 1;
-const ROOMS = { great: 'Great room', kitchen: 'Kitchen', bedroom: 'Primary suite' };
+const ROOMS = [
+  { name: 'Great room', text: 'Seven metres of glass on two sides, a stone fireplace and the whole bay in front of you.' },
+  { name: 'Kitchen', text: 'A six-metre island in honed marble under brass pendants, with oak joinery floor to ceiling.' },
+  { name: 'Primary suite', text: 'Wake up facing the water. Sheer curtains, an oak headboard wall and a walk-in behind it.' },
+];
+/* scroll timeline (0–1): rise to the lit floor, push in through the window, then the three rooms */
+const P = { rise: 0.26, push: 0.37, cross: 0.41, rooms: [0.41, 0.61, 0.81, 1.0] };
 
 const stage = document.getElementById('stage'), world = document.getElementById('world'), tour = document.getElementById('tour');
 const hit = document.getElementById('hit'), band = document.getElementById('band');
+const inside = document.getElementById('inside'), flash = document.getElementById('flash');
+const roomEls = [...inside.querySelectorAll('.r')], chips = [...document.querySelectorAll('.chip')];
 const $ = id => document.getElementById(id);
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const smooth = t => { t = clamp(t); return t * t * (3 - 2 * t); };
+const seg = (p, a, b) => clamp((p - a) / (b - a));
 
 hit.style.left = (T.x0 * IMG_W) + 'px'; hit.style.width = ((T.x1 - T.x0) * IMG_W) + 'px';
 hit.style.top = (T.yTop * IMG_H) + 'px'; hit.style.height = ((T.yBot - T.yTop) * IMG_H) + 'px';
@@ -242,103 +261,103 @@ function residence(f) {
   const status = r < 6 ? 'available' : r < 8 ? 'reserved' : 'sold';
   return { type, size, view, status };
 }
-let floor = 38, hoverOn = false;
-function setFloor(f, show = true) {
-  floor = Math.max(F_MIN, Math.min(F_MAX, f));
+let floor = 42;
+const floorY = f => (T.yTop * IMG_H) + (F_MAX - f + 0.5) * bandH;   // centre of a floor band, in world px
+function setFloor(f) {
+  floor = clamp(f, F_MIN, F_MAX);
   const R = residence(floor);
   $('fn').textContent = floor;
   $('ftype').textContent = R.type;
   $('fsize').textContent = R.size + ' m²';
   $('fview').textContent = R.view;
   const s = $('fstatus'); s.className = 'status ' + R.status; s.textContent = R.status[0].toUpperCase() + R.status.slice(1);
-  $('enter').textContent = R.status === 'sold' ? 'View this residence' : 'Step inside';
   band.style.top = ((F_MAX - floor) * bandH) + 'px';
-  band.classList.toggle('on', show);
+  $('rk').textContent = `Floor ${floor} · ${R.type} · ${R.size} m²`;
 }
-hit.addEventListener('pointermove', e => {
-  const r = hit.getBoundingClientRect();
-  const k = Math.floor((e.clientY - r.top) / r.height * N);
-  setFloor(F_MAX - Math.max(0, Math.min(N - 1, k)));
-});
-hit.addEventListener('pointerleave', () => { if (!matchMedia('(hover: none)').matches) band.classList.remove('on'); });
-hit.addEventListener('click', e => {
-  const r = hit.getBoundingClientRect();
-  setFloor(F_MAX - Math.max(0, Math.min(N - 1, Math.floor((e.clientY - r.top) / r.height * N))));
-  if (matchMedia('(hover: hover)').matches) openViewer();
-});
+const floorAt = e => { const r = hit.getBoundingClientRect(); return F_MAX - clamp(Math.floor((e.clientY - r.top) / r.height * N), 0, N - 1); };
+hit.addEventListener('pointermove', e => { if (cur < P.rise + 0.02) setFloor(floorAt(e)); });
+hit.addEventListener('click', e => { setFloor(floorAt(e)); if (matchMedia('(hover: hover)').matches) goTo(P.cross + 0.01); });
 $('up').addEventListener('click', () => setFloor(floor + 1));
 $('down').addEventListener('click', () => setFloor(floor - 1));
-$('enter').addEventListener('click', openViewer);
-if (matchMedia('(hover: none)').matches) $('hint').textContent = 'Tap the tower to pick a floor · scroll to rise';
+$('enter').addEventListener('click', () => goTo(P.cross + 0.01));
+$('back').addEventListener('click', () => goTo(0));
+if (matchMedia('(hover: none)').matches) $('hint').textContent = 'Tap the tower to choose another floor · scroll to enter';
 
-/* camera: cover the stage, then zoom up the facade with scroll */
-let cur = 0;
-function layout(p) {
-  const vw = stage.clientWidth, vh = stage.clientHeight;
-  const cover = Math.max(vw / IMG_W, vh / IMG_H);
-  const narrow = vw < 860;
-  const z0 = narrow ? Math.max(cover, vh / (IMG_H * 0.95)) : cover;
-  const z1 = z0 * (narrow ? 1.9 : 2.3);
-  const e = p * p * (3 - 2 * p);
-  const s = z0 + (z1 - z0) * e;
-  const cx = (T.x0 + T.x1) / 2 * IMG_W;
-  const focusY = (0.70 + (0.26 - 0.70) * e) * IMG_H;   // rise from the base to the crown
-  const fx = narrow ? 0.5 : 0.5;
-  let tx = vw * fx - cx * s, ty = vh * (narrow ? 0.46 : 0.5) - focusY * s;
-  tx = Math.min(0, Math.max(vw - IMG_W * s, tx));
-  ty = Math.min(0, Math.max(vh - IMG_H * s, ty));
-  world.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+/* day / night inside */
+function setNight(on) {
+  stage.classList.toggle('isnight', on);
+  $('day').setAttribute('aria-pressed', String(!on)); $('night').setAttribute('aria-pressed', String(on));
 }
-function progress() {
-  const span = tour.offsetHeight - stage.offsetHeight;
-  return Math.min(1, Math.max(0, -tour.getBoundingClientRect().top / span));
+$('day').addEventListener('click', () => setNight(false));
+$('night').addEventListener('click', () => setNight(true));
+chips.forEach(c => c.addEventListener('click', () => { const i = +c.dataset.i; goTo(P.rooms[i] + 0.02); }));
+
+/* scrolling */
+const span = () => tour.offsetHeight - stage.offsetHeight;
+const progress = () => clamp(-tour.getBoundingClientRect().top / span());
+function goTo(p) {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: tour.offsetTop + span() * p + 2, behavior: reduce ? 'auto' : 'smooth' });
+}
+
+let cur = 0, shownRoom = -1;
+function frame(p) {
+  const vw = stage.clientWidth, vh = stage.clientHeight, narrow = vw < 860;
+  const cover = Math.max(vw / IMG_W, vh / IMG_H);
+  const z0 = narrow ? Math.max(cover, vh / (IMG_H * 0.95)) : cover;
+  const zRise = z0 * (narrow ? 1.7 : 2.1);
+  const zEnter = Math.max(zRise * 1.2, (vh * 0.2) / bandH);    // the lit floor grows to a fifth of the screen
+  const cx = (T.x0 + T.x1) / 2 * IMG_W;
+  const fy = floorY(floor);
+
+  const a = smooth(seg(p, 0, P.rise));          // rise from the base to the lit floor
+  const b = smooth(seg(p, P.rise, P.push));     // push in through the window
+  const s = b > 0 ? zRise * Math.pow(zEnter / zRise, b) : z0 + (zRise - z0) * a;
+  const baseY = 0.72 * IMG_H;
+  const focusY = baseY + (fy - baseY) * a;
+  let tx = vw / 2 - cx * s, ty = vh * (narrow ? 0.5 : 0.5) - focusY * s;
+  if (b === 0) { tx = clamp(tx, vw - IMG_W * s, 0); ty = clamp(ty, vh - IMG_H * s, 0); }
+  world.style.transform = `translate(${tx}px, ${ty}px) scale(${s})`;
+
+  const f = smooth(seg(p, P.push - 0.06, P.cross - 0.01));        // warm window light floods the screen
+  const fo = smooth(seg(p, P.cross - 0.015, P.cross + 0.04));
+  flash.style.opacity = (f * (1 - fo)).toFixed(3);
+  const inOp = smooth(seg(p, P.cross - 0.02, P.cross + 0.02));
+  inside.style.opacity = inOp.toFixed(3);
+  stage.classList.toggle('entering', p > P.rise * 0.9 && inOp < 0.5);
+  const isIn = inOp > 0.5;
+  stage.classList.toggle('in', isIn);
+  $('back').hidden = !isIn; $('resLink').hidden = isIn;
+
+  // rooms: crossfade between them, each with a slow push forward
+  let room = 0;
+  roomEls.forEach((el, i) => {
+    const r0 = P.rooms[i], r1 = P.rooms[i + 1];
+    const fadeIn = i === 0 ? 1 : smooth(seg(p, r0 - 0.03, r0 + 0.02));
+    const fadeOut = i === roomEls.length - 1 ? 0 : smooth(seg(p, r1 - 0.03, r1 + 0.02));
+    el.style.opacity = (fadeIn * (1 - fadeOut)).toFixed(3);
+    const t = seg(p, i === 0 ? P.cross - 0.02 : r0 - 0.03, r1);
+    const start = i === 0 ? 1.32 : 1.04;            // the first room arrives through the glass
+    const sc = start + (1.16 - start) * smooth(t) + (i === 0 ? 0 : 0.0);
+    const drift = (i % 2 ? -1 : 1) * 1.6 * smooth(t);
+    el.querySelectorAll('img').forEach(img => img.style.transform = `scale(${(i === 0 ? sc : 1.04 + 0.12 * smooth(t)).toFixed(4)}) translateX(${drift.toFixed(2)}%)`);
+    if (p >= r0 - 0.01) room = i;
+  });
+  if (room !== shownRoom) {
+    shownRoom = room;
+    $('rname').textContent = ROOMS[room].name; $('rtext').textContent = ROOMS[room].text;
+    chips.forEach((c, i) => c.classList.toggle('on', i === room));
+  }
 }
 function tick() {
   const t = progress();
   cur += (t - cur) * 0.12;
-  if (Math.abs(t - cur) < 0.0005) cur = t;
-  layout(cur);
+  if (Math.abs(t - cur) < 0.0004) cur = t;
+  frame(cur);
   requestAnimationFrame(tick);
 }
+setFloor(42);
 requestAnimationFrame(tick);
-setFloor(38, false);
-
-/* residence viewer */
-const viewer = $('viewer');
-let room = 'great', lastFocus = null;
-function showRoom(r) {
-  room = r;
-  $('imgDay').src = r + '.jpg'; $('imgNight').src = r + '-night.jpg';
-  $('imgDay').alt = ROOMS[r] + ' by day'; $('imgNight').alt = ROOMS[r] + ' at night';
-  $('rlabel').textContent = ROOMS[r];
-  document.querySelectorAll('.tab').forEach(b => b.setAttribute('aria-selected', String(b.dataset.r === r)));
-}
-function setNight(on) {
-  viewer.classList.toggle('isnight', on);
-  $('day').setAttribute('aria-pressed', String(!on)); $('night').setAttribute('aria-pressed', String(on));
-}
-function openViewer() {
-  const R = residence(floor);
-  $('vsub').textContent = `Floor ${floor} · ${R.size} m² · ${R.status[0].toUpperCase() + R.status.slice(1)}`;
-  $('vtitle').lastChild.textContent = R.type + (R.type.includes('residence') || R.type === 'Penthouse' ? '' : ' residence');
-  showRoom('great'); setNight(false);
-  lastFocus = document.activeElement;
-  viewer.hidden = false; requestAnimationFrame(() => viewer.classList.add('open'));
-  document.body.style.overflow = 'hidden';
-  $('close').focus();
-}
-function closeViewer() {
-  viewer.classList.remove('open');
-  document.body.style.overflow = '';
-  setTimeout(() => { viewer.hidden = true; }, 350);
-  if (lastFocus) lastFocus.focus();
-}
-$('close').addEventListener('click', closeViewer);
-document.addEventListener('keydown', e => { if (e.key === 'Escape' && !viewer.hidden) closeViewer(); });
-document.querySelectorAll('.tab').forEach(b => b.addEventListener('click', () => showRoom(b.dataset.r)));
-$('day').addEventListener('click', () => setNight(false));
-$('night').addEventListener('click', () => setNight(true));
-['great-night', 'kitchen', 'kitchen-night', 'bedroom', 'bedroom-night'].forEach(n => { const i = new Image(); i.src = n + '.jpg'; });
 </script>
 </body>
 </html>
