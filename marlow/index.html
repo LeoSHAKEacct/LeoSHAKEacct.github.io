@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Marlow Bay</title>
-<meta name="description" content="Marlow Bay, Residence 12: one lit floor in a 60-storey tower on the water. Fly in through the window and walk every room with the floor plan beside you. Concept by worldmatters.">
-<meta property="og:title" content="Marlow Bay · Residence 12">
+<meta name="description" content="Marlow Bay, Residence 34: one lit floor in a 60-storey tower on the water. Fly in through the window and walk every room with the floor plan beside you. Concept by worldmatters.">
+<meta property="og:title" content="Marlow Bay · Residence 34">
 <meta property="og:description" content="One floor is lit. Fly in and walk through it.">
 <meta property="og:image" content="tower-sm.jpg">
 <link rel="icon" href="data:,">
@@ -169,20 +169,20 @@ button { font: inherit; color: inherit; }
 </head>
 <body>
 
-<section class="tour" id="tour" aria-label="Marlow Bay, Residence 12">
+<section class="tour" id="tour" aria-label="Marlow Bay, Residence 34">
   <div class="stage" id="stage">
     <div class="world" id="world">
-      <img src="tower.jpg" alt="Marlow Bay, a slender 43-storey tower on the water at blue hour, with the 12th floor lit">
+      <img src="tower.jpg" alt="Marlow Bay, a slender 43-storey tower on the water at blue hour, with the 34th floor lit">
       <svg class="lit" id="lit" viewBox="0 0 5440 3072" aria-hidden="true"></svg>
-      <div class="hit" id="hit" title="Step inside Residence 12"></div>
+      <div class="hit" id="hit" title="Step inside Residence 34"></div>
     </div>
     <div class="shade outside"></div>
     <div class="flash" id="flash"></div>
 
     <div class="inside" id="inside">
       <div class="view" id="view" aria-hidden="true"></div>
-      <aside class="plan" aria-label="Floor plan of Residence 12">
-        <div class="ph"><b>Residence 12</b><span>Floor plan · 188 m²</span></div>
+      <aside class="plan" aria-label="Floor plan of Residence 34">
+        <div class="ph"><b>Residence 34</b><span>Floor plan · 188 m²</span></div>
         <svg id="plan" viewBox="-0.8 -0.9 20.6 14.6" role="img" aria-label="Floor plan with the current room highlighted"></svg>
         <ol class="stops" id="stops"></ol>
       </aside>
@@ -197,16 +197,16 @@ button { font: inherit; color: inherit; }
     </div>
 
     <div class="bar">
-      <a class="brand" href="#tour">Marlow Bay<small>Residence 12</small></a>
+      <a class="brand" href="#tour">Marlow Bay<small>Residence 34</small></a>
       <div class="pills">
         <button class="pill" id="back" type="button" hidden>Back to the tower</button>
         <a class="pill" href="#details" id="detLink">Details</a>
-        <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2012%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a viewing</a>
+        <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2034%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a viewing</a>
       </div>
     </div>
 
     <div class="copy outside">
-      <div class="eyebrow">One residence · Floor 12</div>
+      <div class="eyebrow">One residence · Floor 34</div>
       <h1>Move over the tower. <em>Step inside.</em></h1>
       <p>Watch the light climb to the one home for sale. Then scroll: the camera rises to that floor, through the window and into every room.</p>
       <div class="hint">Scroll to enter</div>
@@ -234,7 +234,7 @@ button { font: inherit; color: inherit; }
 <section class="after" id="details">
   <div class="wrap">
     <div>
-      <h3>Residence 12, the whole floor plate facing the bay</h3>
+      <h3>Residence 34, the whole floor plate facing the bay</h3>
       <p class="lede">A private gallery entry, a corner great room with seven metres of glass, a kitchen and dining room that open to the terrace, a study, a guest bedroom and a primary suite with its own bath and walk-in.</p>
     </div>
     <dl class="facts">
@@ -244,7 +244,7 @@ button { font: inherit; color: inherit; }
       <div><dt>Ceiling height</dt><dd>3.1 m</dd></div>
     </dl>
     <div class="cta">
-      <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2012%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a private viewing</a>
+      <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2034%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a private viewing</a>
       <button class="pill" id="again" type="button">Walk through it again</button>
     </div>
     <p class="note">Concept development website by <a href="https://worldmatters.shakeapp.today/">worldmatters</a>. Plans, areas and availability are illustrative.</p>
@@ -273,7 +273,7 @@ const WALKIN = [3.2, 0, 2.3, 4];
 const IMG_W = 1600, IMG_H = 904, SRC = 1600 / 5440;
 const TX0 = 2440, TX1 = 3004;                 // facade edges
 const BASE = 2800, PITCH = 55.3, TOP_FLOOR = 43;   // first tower floor sits on the podium roof at y = 2800
-const FLOOR = 12;                              // the one residence for sale
+const FLOOR = 34;                              // the one residence for sale
 const floorTop = f => BASE - PITCH * f, floorBot = f => BASE - PITCH * (f - 1);
 const T = { x0: TX0 / 5440, x1: TX1 / 5440, yTop: floorTop(TOP_FLOOR) / 3072, yBot: BASE / 3072 };
 const bandH = PITCH * SRC;
@@ -304,15 +304,19 @@ function lightFloor(f) {
 /* the light climbs floor by floor and stops on the residence */
 let climbTimer = null, climbed = false;
 function climb() {
-  clearInterval(climbTimer); climbed = true;
+  clearTimeout(climbTimer); climbed = true;
   const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
   if (reduce) { lightFloor(FLOOR); stage.classList.add('landed'); return; }
   stage.classList.remove('landed');
+  // fast at first, easing into the last floors (about 3 seconds in all)
   let f = 1; lightFloor(f);
-  climbTimer = setInterval(() => {
+  const step = () => {
     f += 1; lightFloor(f);
-    if (f >= FLOOR) { clearInterval(climbTimer); stage.classList.add('landed'); }
-  }, 170);
+    if (f >= FLOOR) { stage.classList.add('landed'); return; }
+    const left = FLOOR - f;
+    climbTimer = setTimeout(step, left > 6 ? 55 : 90 + (6 - left) * 45);
+  };
+  climbTimer = setTimeout(step, 55);
 }
 const towerImg = world.querySelector('img');
 if (towerImg.complete) setTimeout(climb, 500); else towerImg.addEventListener('load', () => setTimeout(climb, 400));
