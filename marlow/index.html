@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Marlow Bay</title>
-<meta name="description" content="Marlow Bay, Residence 42: one lit floor in a 60-storey tower on the water. Fly in through the window and walk every room with the floor plan beside you. Concept by worldmatters.">
-<meta property="og:title" content="Marlow Bay · Residence 42">
+<meta name="description" content="Marlow Bay, Residence 12: one lit floor in a 60-storey tower on the water. Fly in through the window and walk every room with the floor plan beside you. Concept by worldmatters.">
+<meta property="og:title" content="Marlow Bay · Residence 12">
 <meta property="og:description" content="One floor is lit. Fly in and walk through it.">
 <meta property="og:image" content="tower-sm.jpg">
 <link rel="icon" href="data:,">
@@ -39,9 +39,10 @@ button { font: inherit; color: inherit; }
 .world { position: absolute; left: 0; top: 0; width: 1600px; height: 904px; transform-origin: 0 0; will-change: transform; }
 .world img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
 .hit { position: absolute; cursor: pointer; }
-.lit { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible; animation: breathe 2.4s ease-in-out infinite;
+.lit { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; overflow: visible;
   filter: drop-shadow(0 0 6px rgba(255,205,130,.95)) drop-shadow(0 0 22px rgba(255,190,110,.6)); }
-.lit polygon { fill: rgba(255,214,150,.55); stroke: rgba(255,226,170,.9); stroke-width: 2; stroke-linejoin: round; }
+.lit polygon { fill: rgba(255,214,150,.5); stroke: rgba(255,226,170,.95); stroke-width: 2.5; }
+.stage.landed .lit { animation: breathe 2.4s ease-in-out infinite; }
 @keyframes breathe { 0%,100% { opacity: .8; } 50% { opacity: 1; } }
 .shade { position: absolute; inset: 0; pointer-events: none; background: linear-gradient(90deg, rgba(8,13,25,.78) 0%, rgba(8,13,25,.35) 30%, rgba(8,13,25,0) 46%, rgba(8,13,25,0) 64%, rgba(8,13,25,.5) 100%); }
 .flash { position: absolute; inset: 0; pointer-events: none; background: radial-gradient(ellipse at center, rgba(255,222,170,1) 0%, rgba(255,205,140,.85) 40%, rgba(255,190,120,0) 75%); opacity: 0; }
@@ -68,7 +69,10 @@ button { font: inherit; color: inherit; }
 .copy p { margin: 0; color: var(--sky); max-width: 36ch; }
 .copy .hint { margin-top: 18px; font: 500 12px/1.5 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--sky-dim); }
 .floorcard { position: absolute; z-index: 2; right: max(28px, env(safe-area-inset-right, 0px)); top: 50%; transform: translateY(-50%); width: 260px; text-align: right; }
-.floorcard .n { font: 400 132px/.85 var(--display); color: var(--sky); font-variant-numeric: lining-nums; }
+.floorcard .n { font: 400 132px/.85 var(--display); color: var(--sky); font-variant-numeric: lining-nums tabular-nums; transition: color .4s; }
+.stage.landed .floorcard .n { color: var(--glow); }
+.floorcard .info { transition: opacity .5s, transform .5s; }
+.stage:not(.landed) .floorcard .info { opacity: 0; transform: translateY(8px); }
 .floorcard .lvl { font: 600 11px/1 var(--body); letter-spacing: .2em; text-transform: uppercase; color: var(--sky-dim); margin-top: 6px; }
 .info { margin-top: 18px; padding: 14px 16px; text-align: left; background: rgba(11,18,32,.66); border: 1px solid var(--line); border-radius: 10px; backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
 .info h2 { font: 400 22px/1.1 var(--display); margin: 0 0 10px; }
@@ -165,20 +169,20 @@ button { font: inherit; color: inherit; }
 </head>
 <body>
 
-<section class="tour" id="tour" aria-label="Marlow Bay, Residence 42">
+<section class="tour" id="tour" aria-label="Marlow Bay, Residence 12">
   <div class="stage" id="stage">
     <div class="world" id="world">
-      <img src="tower.jpg" alt="Marlow Bay, a slender 60-storey tower on the water at blue hour, with the 42nd floor lit">
+      <img src="tower.jpg" alt="Marlow Bay, a slender 43-storey tower on the water at blue hour, with the 12th floor lit">
       <svg class="lit" id="lit" viewBox="0 0 5440 3072" aria-hidden="true"></svg>
-      <div class="hit" id="hit" title="Step inside Residence 42"></div>
+      <div class="hit" id="hit" title="Step inside Residence 12"></div>
     </div>
     <div class="shade outside"></div>
     <div class="flash" id="flash"></div>
 
     <div class="inside" id="inside">
       <div class="view" id="view" aria-hidden="true"></div>
-      <aside class="plan" aria-label="Floor plan of Residence 42">
-        <div class="ph"><b>Residence 42</b><span>Floor plan · 188 m²</span></div>
+      <aside class="plan" aria-label="Floor plan of Residence 12">
+        <div class="ph"><b>Residence 12</b><span>Floor plan · 188 m²</span></div>
         <svg id="plan" viewBox="-0.8 -0.9 20.6 14.6" role="img" aria-label="Floor plan with the current room highlighted"></svg>
         <ol class="stops" id="stops"></ol>
       </aside>
@@ -193,24 +197,24 @@ button { font: inherit; color: inherit; }
     </div>
 
     <div class="bar">
-      <a class="brand" href="#tour">Marlow Bay<small>Residence 42</small></a>
+      <a class="brand" href="#tour">Marlow Bay<small>Residence 12</small></a>
       <div class="pills">
         <button class="pill" id="back" type="button" hidden>Back to the tower</button>
         <a class="pill" href="#details" id="detLink">Details</a>
-        <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2042%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a viewing</a>
+        <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2012%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a viewing</a>
       </div>
     </div>
 
     <div class="copy outside">
-      <div class="eyebrow">One residence · Floor 42</div>
+      <div class="eyebrow">One residence · Floor 12</div>
       <h1>Move over the tower. <em>Step inside.</em></h1>
-      <p>Only one floor is lit tonight. Scroll and the camera rises to it, through the window and into every room of the home.</p>
+      <p>Watch the light climb to the one home for sale. Then scroll: the camera rises to that floor, through the window and into every room.</p>
       <div class="hint">Scroll to enter</div>
     </div>
 
     <div class="floorcard outside">
       <div>
-        <div class="n">42</div>
+        <div class="n" id="fn">01</div>
         <div class="lvl">Floor</div>
       </div>
       <div class="info">
@@ -230,7 +234,7 @@ button { font: inherit; color: inherit; }
 <section class="after" id="details">
   <div class="wrap">
     <div>
-      <h3>Residence 42, the whole floor plate facing the bay</h3>
+      <h3>Residence 12, the whole floor plate facing the bay</h3>
       <p class="lede">A private gallery entry, a corner great room with seven metres of glass, a kitchen and dining room that open to the terrace, a study, a guest bedroom and a primary suite with its own bath and walk-in.</p>
     </div>
     <dl class="facts">
@@ -240,7 +244,7 @@ button { font: inherit; color: inherit; }
       <div><dt>Ceiling height</dt><dd>3.1 m</dd></div>
     </dl>
     <div class="cta">
-      <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2042%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a private viewing</a>
+      <a class="pill solid" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20book%20a%20private%20viewing%20of%20Residence%2012%20at%20Marlow%20Bay" target="_blank" rel="noopener">Book a private viewing</a>
       <button class="pill" id="again" type="button">Walk through it again</button>
     </div>
     <p class="note">Concept development website by <a href="https://worldmatters.shakeapp.today/">worldmatters</a>. Plans, areas and availability are illustrative.</p>
@@ -249,7 +253,6 @@ button { font: inherit; color: inherit; }
 
 <script>
 /* ---------- the one residence ---------- */
-const FLOOR = 42;
 // plan in metres: x east, y south (bay side at the bottom). cam = [x, y, view direction in degrees, 0 = east, 90 = south]
 // pan: which side of the panorama the camera starts at and leaves by (0 = left, .5 = centre, 1 = right)
 // path: drone positions on the plan [x, y, heading] at the start and end of the room
@@ -266,16 +269,15 @@ const ROOMS = [
 ];
 const WALKIN = [3.2, 0, 2.3, 4];
 
-/* ---------- tower geometry (fractions of the 1600 × 904 world) ---------- */
-const IMG_W = 1600, IMG_H = 904;
-const T = { x0: 0.350, x1: 0.492, yTop: 0.245, yBot: 0.975 };
-const F_MIN = 10, F_MAX = 60, N = F_MAX - F_MIN + 1;
-const SRC = 1600 / 5440;   // source image px -> world px
-// the lit floor: one row of windows in each glass bay, traced from the facade (x, y in the 5440 px source image)
-const LIT_BAYS = [[[1893,1566],[1952,1561],[1952,1612],[1893,1617]],[[2026,1582],[2062,1581],[2062,1631],[2026,1632]],[[2090,1563],[2146,1557],[2146,1607],[2090,1613]],[[2152,1552],[2234,1565],[2234,1615],[2152,1604]],[[2280,1540],[2312,1540],[2312,1597],[2280,1597]],[[2337,1563],[2370,1563],[2370,1619],[2337,1619]],[[2421,1535],[2452,1535],[2452,1589],[2421,1589]],[[2476,1556],[2517,1560],[2517,1613],[2476,1608]],[[2549,1537],[2572,1537],[2572,1590],[2549,1590]],[[2608,1553],[2675,1569],[2675,1620],[2608,1604]]];
-const LIT_H = 52;
-const bandH = LIT_H * SRC;
-const floorY = 1585 * SRC;
+/* ---------- tower geometry: measured from the straight-on elevation (5440 x 3072 source px) ---------- */
+const IMG_W = 1600, IMG_H = 904, SRC = 1600 / 5440;
+const TX0 = 2440, TX1 = 3004;                 // facade edges
+const BASE = 2800, PITCH = 55.3, TOP_FLOOR = 43;   // first tower floor sits on the podium roof at y = 2800
+const FLOOR = 12;                              // the one residence for sale
+const floorTop = f => BASE - PITCH * f, floorBot = f => BASE - PITCH * (f - 1);
+const T = { x0: TX0 / 5440, x1: TX1 / 5440, yTop: floorTop(TOP_FLOOR) / 3072, yBot: BASE / 3072 };
+const bandH = PITCH * SRC;
+const floorY = (floorTop(FLOOR) + PITCH / 2) * SRC;
 
 /* scroll timeline: rise, push through the window, then the rooms */
 const RISE = 0.08, PUSH = 0.13, CROSS = 0.155;
@@ -291,7 +293,29 @@ const seg = (p, a, b) => clamp((p - a) / (b - a));
 
 hit.style.left = (T.x0 * IMG_W) + 'px'; hit.style.width = ((T.x1 - T.x0) * IMG_W) + 'px';
 hit.style.top = (T.yTop * IMG_H) + 'px'; hit.style.height = ((T.yBot - T.yTop) * IMG_H) + 'px';
-LIT_BAYS.forEach(P => { const g = document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); g.setAttribute('points', P.map(q => q.join(',')).join(' ')); $('lit').appendChild(g); });
+const litPoly = document.createElementNS('http://www.w3.org/2000/svg', 'polygon'); $('lit').appendChild(litPoly);
+let litFloor = 1;
+function lightFloor(f) {
+  litFloor = f;
+  const t = floorTop(f) + 3, b = floorBot(f) - 3;
+  litPoly.setAttribute('points', `${TX0 - 4},${t} ${TX1 + 4},${t} ${TX1 + 4},${b} ${TX0 - 4},${b}`);
+  $('fn').textContent = String(f).padStart(2, '0');
+}
+/* the light climbs floor by floor and stops on the residence */
+let climbTimer = null, climbed = false;
+function climb() {
+  clearInterval(climbTimer); climbed = true;
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { lightFloor(FLOOR); stage.classList.add('landed'); return; }
+  stage.classList.remove('landed');
+  let f = 1; lightFloor(f);
+  climbTimer = setInterval(() => {
+    f += 1; lightFloor(f);
+    if (f >= FLOOR) { clearInterval(climbTimer); stage.classList.add('landed'); }
+  }, 170);
+}
+const towerImg = world.querySelector('img');
+if (towerImg.complete) setTimeout(climb, 500); else towerImg.addEventListener('load', () => setTimeout(climb, 400));
 
 /* ---------- build rooms, plan and list ---------- */
 const NS = 'http://www.w3.org/2000/svg';
@@ -411,6 +435,7 @@ function frame(p) {
 }
 function tick() {
   const t = scrollP();
+  if (t > 0.05) climbed = false; else if (!climbed && t < 0.005) climb();
   cur += (t - cur) * 0.12;
   if (Math.abs(t - cur) < 0.0003) cur = t;
   frame(cur);
