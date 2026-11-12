@@ -74,7 +74,10 @@ a { color: inherit; }
 .pieces { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 40px; }
 .piece { display: grid; gap: 18px; min-width: 0; }
 .piece .img { position: relative; aspect-ratio: 4 / 3; overflow: hidden; background: var(--paper-2); }
-.piece .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: opacity .5s ease, transform 1.2s ease; }
+.piece .img { cursor: zoom-in; }
+.piece .img img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transform-origin: var(--zx, 50%) var(--zy, 50%); transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.piece .img:hover img { transform: scale(1.9); }
+@media (hover: none) { .piece .img { cursor: default; } .piece .img:hover img { transform: none; } }
 .piece .row { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; flex-wrap: wrap; }
 .piece h4 { font: 400 34px/1 var(--display); margin: 0; }
 .piece h4 small { font: 500 11px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--brass); margin-right: 12px; vertical-align: middle; }
@@ -150,17 +153,17 @@ a { color: inherit; }
   <div class="wrap">
     <div class="head">
       <h3>The collection</h3>
-      <p>Each piece is made to order in small runs, in the materials you see here.</p>
+      <p>Each piece is made to order in small runs. Hover a piece to look closer.</p>
     </div>
     <div class="pieces">
       <article class="piece">
-        <div class="img"><img src="table.jpg" alt="Arca marble coffee table on the open book"></div>
+        <div class="img"><img src="table.jpg?v=3" alt="Arca marble coffee table on the open book"></div>
         <div class="row"><h4><small>No. 01</small>Arca</h4><span class="mat">Calacatta marble · brushed brass</span></div>
         <dl><div><dt>Diameter</dt><dd>110 cm</dd></div><div><dt>Height</dt><dd>38 cm</dd></div><div><dt>Lead time</dt><dd>8 weeks</dd></div></dl>
         <a class="enquire" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20enquire%20about%20the%20Arca%20coffee%20table%20from%20Maison%20Folio" target="_blank" rel="noopener">Enquire about Arca</a>
       </article>
       <article class="piece">
-        <div class="img"><img src="chair.jpg" alt="Dune boucl&eacute; lounge chair on the open book"></div>
+        <div class="img"><img src="chair.jpg?v=3" alt="Dune boucl&eacute; lounge chair on the open book"></div>
         <div class="row"><h4><small>No. 02</small>Dune</h4><span class="mat">Ivory bouclé · white oak</span></div>
         <dl><div><dt>Width</dt><dd>72 cm</dd></div><div><dt>Depth</dt><dd>110 cm</dd></div><div><dt>Lead time</dt><dd>10 weeks</dd></div></dl>
         <a class="enquire" href="https://wa.me/573223140283?text=Hello%2C%20I%27d%20like%20to%20enquire%20about%20the%20Dune%20lounge%20chair%20from%20Maison%20Folio" target="_blank" rel="noopener">Enquire about Dune</a>
@@ -174,6 +177,15 @@ a { color: inherit; }
 </section>
 
 <script>
+/* hover zoom follows the cursor so you can look closely at the stone, brass, wool and oak */
+document.querySelectorAll('.piece .img').forEach(box => {
+  box.addEventListener('pointermove', e => {
+    const r = box.getBoundingClientRect();
+    box.style.setProperty('--zx', ((e.clientX - r.left) / r.width * 100).toFixed(1) + '%');
+    box.style.setProperty('--zy', ((e.clientY - r.top) / r.height * 100).toFixed(1) + '%');
+  });
+});
+
 const tour = document.getElementById('tour'), stage = document.getElementById('stage'), film = document.getElementById('film');
 const caps = [document.getElementById('cap0'), document.getElementById('cap1'), document.getElementById('cap2')];
 const chapters = [...document.querySelectorAll('#chapters button')];
