@@ -417,7 +417,10 @@ function walkFrame(p) {
     for (const k in mapsG) mapsG[k].classList.toggle('here', lv === 'G' && w.lv !== 'O' && k === w.zone);
     for (const k in mapsU) mapsU[k].classList.toggle('here', lv === 'U' && k === w.zone);
     WALK.forEach((q, i) => q.stop.classList.toggle('on', i === cur));
-    w.stop.scrollIntoView({ block: 'nearest' });
+    // keep the current stop visible inside the list only, never move the page
+    const li = w.stop.parentNode, top = li.offsetTop - wstops.offsetTop;
+    if (top < wstops.scrollTop) wstops.scrollTop = top;
+    else if (top + li.offsetHeight > wstops.scrollTop + wstops.clientHeight) wstops.scrollTop = top + li.offsetHeight - wstops.clientHeight;
   }
 }
 function walkTick() {
