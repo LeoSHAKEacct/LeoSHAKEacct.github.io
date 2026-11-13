@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="description" content="Casa Mirador: a two-storey villa around a double-height great room. Photoreal drone flythrough, 3D model walkthrough and floor plans by worldmatters.">
+<meta name="description" content="Casa Mirador: a two-storey villa around a double-height great room. Photoreal drone flythrough, a walk through every room and floor plans by worldmatters.">
 <meta property="og:title" content="Casa Mirador · worldmatters">
 <meta property="og:image" content="poster.jpg">
 <link rel="icon" href="data:,">
@@ -101,7 +101,6 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 .ghost { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sand); text-decoration: none; border: 1px solid var(--line); border-radius: 3px; padding: 14px 18px; }
 .ghost:hover { border-color: var(--brass); color: var(--brass); }
 .ghost:focus-visible { outline: 2px solid var(--sand); outline-offset: 3px; }
-video.model { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; background: #000; border: 1px solid var(--line); border-radius: 4px; }
 .note { font: 400 13px/1.6 var(--body); color: var(--sand-dim); border-top: 1px solid var(--line); padding-top: 20px; max-width: 70ch; }
 
 /* plan drawing */
@@ -115,7 +114,43 @@ video.model { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; background: #0
 .dot { fill: var(--brass); }
 .cone { fill: var(--brass); opacity: .28; }
 
+/* ---------- the walk: real rooms along the plan ---------- */
+.walk { position: relative; height: 1350vh; }
+.wstage { position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100svh - env(safe-area-inset-top, 0px)); overflow: hidden; background: #000; display: grid; grid-template-columns: minmax(0, 1fr) min(380px, 30vw); }
+.wview { position: relative; overflow: hidden; }
+.wview .r2 { position: absolute; inset: 0; opacity: 0; }
+.wview img { position: absolute; left: 0; top: 0; max-width: none; transform-origin: 0 0; will-change: transform; }
+.wview::after { content: ""; position: absolute; inset: 0; pointer-events: none; background: linear-gradient(to top, rgba(10,9,8,.88) 0%, rgba(10,9,8,0) 36%), linear-gradient(to bottom, rgba(10,9,8,.5) 0%, rgba(10,9,8,0) 18%); }
+.wcap { position: absolute; z-index: 2; left: max(24px, env(safe-area-inset-left, 0px)); right: calc(min(380px, 30vw) + 24px); bottom: 70px; text-shadow: 0 1px 12px rgba(0,0,0,.55); }
+.wcap .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--brass); display: flex; gap: 14px; font-variant-numeric: tabular-nums; }
+.wcap h2 { font: 400 clamp(40px, 6vw, 84px)/1 var(--display); margin: 10px 0 10px; }
+.wcap p { margin: 0; max-width: 46ch; }
+.wprog { position: absolute; z-index: 2; left: max(24px, env(safe-area-inset-left, 0px)); bottom: 32px; width: min(420px, 40vw); display: flex; gap: 4px; }
+.wprog i { flex: 1; height: 2px; background: rgba(236,228,214,.22); position: relative; overflow: hidden; }
+.wprog i b { position: absolute; inset: 0; background: var(--brass); transform-origin: left; transform: scaleX(0); }
+.wplan { background: var(--ink-2); border-left: 1px solid var(--line); padding: 74px 22px 20px; padding-right: max(22px, env(safe-area-inset-right, 0px)); display: grid; grid-template-rows: auto auto minmax(0, 1fr); gap: 14px; min-height: 0; }
+.wplan .ph { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; font: 500 10.5px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--sand-dim); }
+.wplan .ph b { color: var(--brass); font-weight: 500; }
+.wplan svg { width: 100%; height: auto; display: block; }
+.wplan svg[hidden] { display: none; }
+.wplan .route { fill: none; stroke: var(--brass); stroke-width: .18; stroke-dasharray: .7 .5; opacity: .6; }
+.wstops { list-style: none; margin: 0; padding: 0; overflow: auto; min-height: 0; border-top: 1px solid var(--line); }
+.wstop { all: unset; box-sizing: border-box; cursor: pointer; width: 100%; display: grid; grid-template-columns: 26px 1fr auto; gap: 10px; align-items: baseline; padding: 8px 2px; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--sand-dim); }
+.wstop .i, .wstop .a { font: 500 11px/1 var(--mono); font-variant-numeric: tabular-nums; }
+.wstop.on { color: var(--sand); }
+.wstop.on .i { color: var(--brass); }
+.wstop:focus-visible { outline: 1px solid var(--brass); outline-offset: 2px; }
+.wbar { position: absolute; inset: 0 auto auto 0; right: calc(min(380px, 30vw)); z-index: 3; display: flex; justify-content: space-between; align-items: center; padding-block: 18px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: 24px; text-shadow: 0 1px 12px rgba(0,0,0,.55); }
+
 @media (max-width: 720px) {
+  .walk { height: 1200vh; }
+  .wstage { grid-template-columns: minmax(0, 1fr); }
+  .wplan { position: absolute; z-index: 3; top: 58px; right: max(12px, env(safe-area-inset-right, 0px)); width: 44vw; max-width: 200px; padding: 9px; gap: 6px; border: 1px solid var(--line); border-radius: 8px; background: rgba(28,26,23,.86); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); grid-template-rows: auto auto; }
+  .wstops, .wplan .lbl { display: none; }
+  .wcap { right: max(24px, env(safe-area-inset-right, 0px)); }
+  .wcap h2 { font-size: 46px; }
+  .wcap p { font-size: 14px; }
+  .wbar { right: 0; }
   .tour { height: 560vh; }
   .room { right: max(24px, env(safe-area-inset-right, 0px)); bottom: 84px; }
   .map { width: 132px; top: 58px; bottom: auto; padding: 8px; }
@@ -166,6 +201,25 @@ video.model { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; background: #0
   </div>
 </section>
 
+<section class="walk" id="walk" aria-label="Walk through every room of Casa Mirador">
+  <div class="wstage" id="wstage">
+    <div class="wview" id="wview" aria-hidden="true"></div>
+    <div class="wbar"><a class="brand" href="https://worldmatters.shakeapp.today/">worldmatters</a><span class="clock">Casa Mirador</span></div>
+    <div class="wcap" aria-live="polite">
+      <div class="eyebrow"><span id="wno">01 / 09</span><span id="wlv">Ground floor</span></div>
+      <h2 id="wname">Kitchen</h2>
+      <p id="wtext"></p>
+    </div>
+    <div class="wprog" id="wprog"></div>
+    <aside class="wplan" aria-label="Floor plan">
+      <div class="ph"><b id="wlvl">Ground floor</b><span id="wsz"></span></div>
+      <svg id="wpG" viewBox="-2 -3 34 40" role="img" aria-label="Ground floor plan"></svg>
+      <svg id="wpU" viewBox="-2 -3 34 40" role="img" aria-label="Upper floor plan" hidden></svg>
+      <ol class="wstops" id="wstops"></ol>
+    </aside>
+  </div>
+</section>
+
 <section class="after">
   <div class="wrap">
     <div>
@@ -191,13 +245,8 @@ video.model { width: 100%; max-width: 100%; aspect-ratio: 16 / 9; background: #0
       <a class="ghost" href="plan-ground.png" target="_blank" rel="noopener">Ground floor, PNG</a>
       <a class="ghost" href="plan-upper.png" target="_blank" rel="noopener">Upper floor, PNG</a>
     </div>
-    <div>
-      <h3>The whole house, as a model</h3>
-      <p class="lede">The full 72-second route through the 3D model: entry, great room, kitchen and dining, the pool terrace, up through the double-height void to the bedrooms and balcony, then out for the aerial view.</p>
-    </div>
-    <video class="model" src="model-walkthrough.mp4" poster="poster-model.jpg" controls muted playsinline preload="metadata"></video>
     <button class="again" id="again" type="button">Watch the flythrough again</button>
-    <p class="note">Concept design by worldmatters. The opening film is a photoreal pass over the 3D model of this layout; the model walkthrough shows the complete house. Finishes, furniture and landscaping are indicative.</p>
+    <p class="note">Concept design by worldmatters. The opening film is a photoreal pass over the 3D model of this layout, and the rooms are photoreal visualisations. Finishes, furniture and landscaping are indicative.</p>
   </div>
 </section>
 
@@ -256,6 +305,110 @@ function drawPlan(svg, rooms, withLabels) {
 }
 drawPlan(document.getElementById("planG"), GROUND, true);
 drawPlan(document.getElementById("planU"), UPPER, true);
+
+/* ---------- the walk: real rooms along the plan ---------- */
+// pan: start and exit side of each panorama (0 left, .5 centre, 1 right); path: camera on the plan [x, y, heading°]
+const WALK = [
+  { id: 'kitchen', name: 'Kitchen',       lv: 'G', zone: 'Kitchen',        size: '9 × 8 m',   pan: [0, 1],  path: [[16, 5.5, -20], [21, 4, 0]],     text: 'A six-metre island in white Calacatta marble under brass pendants, open to the great room.' },
+  { id: 'dining',  name: 'Dining room',   lv: 'G', zone: 'Dining',         size: '8 × 8 m',   pan: [0, 1],  path: [[23, 4, 0], [27.5, 7.5, 70]],    text: 'A table for ten under a single linear pendant, with glass doors that slide open to the pool.' },
+  { id: 'pool',    name: 'Pool terrace',  lv: 'G', zone: '',               size: 'Pool 13 × 5.5 m', pan: [0, 1], path: [[28, 22.5, 160], [17, 23, 200]], text: 'A covered terrace runs the length of the house, onto an infinity pool that catches the sunset.' },
+  { id: 'stair',   name: 'Floating stair', lv: 'G', zone: 'Great room',    size: '7 m ceiling', pan: [1, .5], path: [[19, 18, -100], [14.5, 11, -90]], text: 'Thick oak treads and a glass balustrade climb through the double-height great room.' },
+  { id: 'gallery', name: 'Upper gallery', lv: 'U', zone: 'Bridge',         size: 'Bridge 9 × 8 m', pan: [0, .5], path: [[20, 6, 180], [13.5, 6, 180]], text: 'A glass-railed bridge over the great room links the primary suite and the guest wing.' },
+  { id: 'primary', name: 'Primary suite', lv: 'U', zone: 'Primary',        size: '13 × 12 m', pan: [0, 1],  path: [[11.5, 10, 120], [4, 12.5, 200]],  text: 'The whole west wing: a bed facing the pool and the hills, a walk-in and its own bath.' },
+  { id: 'bath',    name: 'Primary bath',  lv: 'U', zone: 'Walk-in · bath', size: '8 × 8 m',   pan: [0, 1],  path: [[5.5, 6.5, -110], [2.5, 3, -150]], text: 'A stone tub at the window, a double marble vanity and a door straight onto the balcony.' },
+  { id: 'balcony', name: 'Balcony',       lv: 'U', zone: 'Balcony',        size: '30 × 3.5 m', pan: [0, .5], path: [[4, 21.8, 30], [14, 21.8, 90]],  text: 'The upper balcony runs the full width of the house, straight above the pool.' },
+  { id: 'aerial',  name: 'The villa',     lv: 'O', zone: '',               size: '1,200 m² · 5 bedrooms', pan: [.3, .7], path: [[15, 34, -90], [15, 34, -90]], text: 'Two floors around a double-height great room, set on its own lawn with the pool to the south.' },
+];
+const LV = { G: 'Ground floor', U: 'Upper floor', O: 'The whole house' };
+const walk = document.getElementById('walk'), wstage = document.getElementById('wstage'), wview = document.getElementById('wview');
+const wpG = document.getElementById('wpG'), wpU = document.getElementById('wpU');
+const mapsG = drawPlan(wpG, GROUND, true), mapsU = drawPlan(wpU, UPPER, true);
+const NSW = 'http://www.w3.org/2000/svg';
+const sv = (svg, tag, attrs) => { const e = document.createElementNS(NSW, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); svg.appendChild(e); return e; };
+const routeOf = lv => WALK.filter(w => w.lv === lv).flatMap(w => w.path.map(([x, y]) => `${x},${y}`)).join(' ');
+sv(wpG, 'polyline', { class: 'route', points: routeOf('G') }); sv(wpU, 'polyline', { class: 'route', points: routeOf('U') });
+const wcone = { G: sv(wpG, 'path', { class: 'cone' }), U: sv(wpU, 'path', { class: 'cone' }) };
+const wdot = { G: sv(wpG, 'circle', { r: .8, class: 'dot' }), U: sv(wpU, 'circle', { r: .8, class: 'dot' }) };
+const wstops = document.getElementById('wstops'), wprog = document.getElementById('wprog');
+WALK.forEach((w, i) => {
+  const d = document.createElement('div'); d.className = 'r2'; d.innerHTML = `<img src="w-${w.id}.jpg" alt="">`;
+  wview.appendChild(d); w.el = d; w.img = d.firstChild;
+  const li = document.createElement('li');
+  li.innerHTML = `<button class="wstop" type="button"><span class="i">${String(i + 1).padStart(2, '0')}</span><span>${w.name}</span><span class="a">${LV[w.lv].split(' ')[0]}</span></button>`;
+  li.firstChild.addEventListener('click', () => walkTo(i)); wstops.appendChild(li); w.stop = li.firstChild;
+  const bar = document.createElement('i'); bar.innerHTML = '<b></b>'; wprog.appendChild(bar); w.bar = bar.firstChild;
+});
+const wspan = () => walk.offsetHeight - wstage.offsetHeight;
+const wP = () => Math.min(1, Math.max(0, -walk.getBoundingClientRect().top / wspan()));
+const WSTEP = 1 / WALK.length;
+function walkTo(i) {
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  window.scrollTo({ top: walk.offsetTop + wspan() * (i * WSTEP + WSTEP * 0.3), behavior: reduce ? 'auto' : 'smooth' });
+}
+const cl = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const sm = t => { t = cl(t); return t * t * (3 - 2 * t); };
+const sg = (p, a, b) => cl((p - a) / (b - a));
+const lerp = (u, v, t) => u + (v - u) * t;
+let wcur = 0, wshown = -1;
+function walkFrame(p) {
+  const vw = wview.clientWidth, vh = wview.clientHeight, AR = 21 / 9;
+  const bw = Math.max(vw, vh * AR), bh = bw / AR, sideX = f => vw * (0.15 + 0.7 * f);
+  let cur = 0, cam = WALK[0].path[0];
+  WALK.forEach((w, i) => {
+    const r0 = i * WSTEP, r1 = r0 + WSTEP, fly = WSTEP * 0.24;
+    const glide = sm(sg(p, r0, r1 - fly));
+    const out = i === WALK.length - 1 ? 0 : sm(sg(p, r1 - fly, r1 + fly * 0.35));
+    const inn = i === 0 ? 0 : 1 - sm(sg(p, r0 - fly, r0 + fly * 0.6));
+    const fin = i === 0 ? 1 : sm(sg(p, r0 - fly * 0.55, r0 - fly * 0.05));
+    const fout = i === WALK.length - 1 ? 0 : sm(sg(p, r1 - fly * 0.5, r1 + fly * 0.2));
+    const op = fin * (1 - fout);
+    w.el.style.opacity = op.toFixed(3);
+    if (op > 0.001) {
+      const pan = lerp(w.pan[0], w.pan[1], glide);
+      const tx = -(bw - vw) * pan, ty = (vh - bh) / 2;
+      const z = 1.03 * (1 + 0.26 * inn) * (1 + 0.9 * out * out);
+      const fx = out > 0 ? sideX(w.pan[1]) : sideX(w.pan[0]), fy = vh * 0.52;
+      w.img.style.width = bw + 'px'; w.img.style.height = bh + 'px';
+      w.img.style.transform = `translate(${fx.toFixed(1)}px, ${fy.toFixed(1)}px) scale(${z.toFixed(4)}) translate(${(tx - fx).toFixed(1)}px, ${(ty - fy).toFixed(1)}px)`;
+    }
+    w.bar.style.transform = `scaleX(${sg(p, r0, r1).toFixed(3)})`;
+    if (p >= r0 - fly * 0.3) {
+      cur = i;
+      const [a0, a1] = w.path, nx = WALK[i + 1];
+      cam = out > 0 && nx && nx.lv === w.lv ? [lerp(a1[0], nx.path[0][0], out), lerp(a1[1], nx.path[0][1], out), lerp(a1[2], nx.path[0][2], out)]
+                                            : [lerp(a0[0], a1[0], glide), lerp(a0[1], a1[1], glide), lerp(a0[2], a1[2], glide)];
+    }
+  });
+  const w = WALK[cur], lv = w.lv === 'U' ? 'U' : 'G';
+  const [x, y, deg] = cam, A = deg * Math.PI / 180, L = 7, Wd = 0.55;
+  wdot[lv].setAttribute('cx', x); wdot[lv].setAttribute('cy', y);
+  wcone[lv].setAttribute('d', `M${x},${y} L${x + L * Math.cos(A - Wd)},${y + L * Math.sin(A - Wd)} L${x + L * Math.cos(A + Wd)},${y + L * Math.sin(A + Wd)} Z`);
+  if (cur !== wshown) {
+    wshown = cur;
+    wpG.toggleAttribute('hidden', lv !== 'G'); wpU.toggleAttribute('hidden', lv !== 'U');
+    const other = lv === 'G' ? 'U' : 'G';
+    wdot[other].setAttribute('cx', -50); wcone[other].setAttribute('d', '');
+    wdot[lv].style.opacity = w.lv === 'O' ? 0 : 1; wcone[lv].style.opacity = w.lv === 'O' ? 0 : '';
+    document.getElementById('wlvl').textContent = LV[w.lv];
+    document.getElementById('wsz').textContent = w.size;
+    document.getElementById('wno').textContent = `${String(cur + 1).padStart(2, '0')} / ${String(WALK.length).padStart(2, '0')}`;
+    document.getElementById('wlv').textContent = LV[w.lv];
+    document.getElementById('wname').textContent = w.name;
+    document.getElementById('wtext').textContent = w.text;
+    for (const k in mapsG) mapsG[k].classList.toggle('here', lv === 'G' && w.lv !== 'O' && k === w.zone);
+    for (const k in mapsU) mapsU[k].classList.toggle('here', lv === 'U' && k === w.zone);
+    WALK.forEach((q, i) => q.stop.classList.toggle('on', i === cur));
+    w.stop.scrollIntoView({ block: 'nearest' });
+  }
+}
+function walkTick() {
+  const t = wP();
+  wcur += (t - wcur) * 0.12;
+  if (Math.abs(t - wcur) < 0.0003) wcur = t;
+  walkFrame(wcur);
+  requestAnimationFrame(walkTick);
+}
+requestAnimationFrame(walkTick);
 
 const mini = document.getElementById("mini");
 let miniRooms = {}, miniFloor = null, cone, dot;
