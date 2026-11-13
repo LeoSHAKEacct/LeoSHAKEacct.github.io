@@ -34,7 +34,7 @@ body { background: var(--ink); color: var(--sand); font: 400 16px/1.6 var(--body
 body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--ink); }
 
 /* ---------- stage ---------- */
-.tour { position: relative; height: 620vh; }
+.tour { position: relative; height: 1750vh; }
 .stage { position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100vh - env(safe-area-inset-top, 0px)); height: calc(100svh - env(safe-area-inset-top, 0px)); overflow: hidden; background: #000; }
 .stage video, .stage .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .stage .poster { transition: opacity .6s; }
@@ -151,7 +151,7 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
   .wcap h2 { font-size: 46px; }
   .wcap p { font-size: 14px; }
   .wbar { right: 0; }
-  .tour { height: 560vh; }
+  .tour { height: 1500vh; }
   .room { right: max(24px, env(safe-area-inset-right, 0px)); bottom: 84px; }
   .map { width: 132px; top: 58px; bottom: auto; padding: 8px; }
   .map .lvl { font-size: 9.5px; margin-bottom: 5px; }
@@ -173,12 +173,12 @@ body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-a
 
     <div class="bar">
       <a class="brand" href="https://worldmatters.shakeapp.today/">worldmatters</a>
-      <div class="clock" id="clock">00:00 / 00:17</div>
+      <div class="clock" id="clock">00:00 / 00:58</div>
     </div>
 
     <div class="intro" id="intro">
       <h1>Casa Mirador</h1>
-      <p>A two-storey villa around a double-height great room, opening south onto the pool. Scroll and the camera flies you in through the front door.</p>
+      <p>A two-storey villa around a double-height great room, opening south onto the pool. Scroll and the camera flies you in through the front door and on through every room.</p>
       <div class="facts">5 bedrooms · 1,200 m² · 30 × 20 m plot footprint</div>
       <div class="cue"><i></i>Scroll to enter</div>
     </div>
@@ -272,7 +272,9 @@ const INFO = {
   "Balcony":            ["Upper floor", "A balcony runs the full width of the house above the terrace.", "30 × 3.5 m"],
   "The villa":          ["Overview", "Five bedrooms, about 1,200 m² over two floors, set on its own lawn.", "Footprint 30 × 20 m"],
 };
-const LABELS = PATH.labels.map(([f, name], i) => ({ f, name, i, info: INFO[name] }));
+// after the great room the film carries on through nine 5 s room clips, each joined with a 0.5 s crossfade
+const FILM_END = 17.5, XR = 0.5, CLIP = 121 / 24;
+const ROOM_START = k => FILM_END - XR + k * (CLIP - XR);
 
 /* ---------- plans ---------- */
 // plan coordinates: x east (m), y south = 20 - Y(north)
@@ -320,6 +322,10 @@ const WALK = [
   { id: 'aerial',  name: 'The villa',     lv: 'O', zone: '',               size: '1,200 m² · 5 bedrooms', pan: [.3, .7], path: [[15, 34, -90], [15, 34, -90]], text: 'Two floors around a double-height great room, set on its own lawn with the pool to the south.' },
 ];
 const LV = { G: 'Ground floor', U: 'Upper floor', O: 'The whole house' };
+const LABELS = [
+  ...PATH.labels.map(([f, name]) => ({ t: timeAt(f), name, info: INFO[name], zone: ROOM_ZONE[name] })),
+  ...WALK.map((w, k) => ({ t: ROOM_START(k), name: w.name, info: [LV[w.lv], w.text, w.size], zone: w.zone, walk: w, k })),
+];
 const walk = document.getElementById('walk'), wstage = document.getElementById('wstage'), wview = document.getElementById('wview');
 const wpG = document.getElementById('wpG'), wpU = document.getElementById('wpU');
 const mapsG = drawPlan(wpG, GROUND, true), mapsU = drawPlan(wpU, UPPER, true);
@@ -428,10 +434,10 @@ const tl = document.getElementById("timeline");
 const ticks = LABELS.map(l => {
   const b = document.createElement("button");
   b.type = "button";
-  b.style.left = (timeAt(l.f) / 17.5 * 100) + "%";
+  b.style.left = (l.t / (ROOM_START(8) + CLIP) * 100) + "%";
   b.setAttribute("aria-label", "Jump to " + l.name);
   b.innerHTML = "<span></span>"; b.firstChild.textContent = l.name;
-  b.addEventListener("click", () => scrollToFrame(l.f + 1));
+  b.addEventListener("click", () => scrollToTime(l.t + 0.6));
   tl.appendChild(b);
   return b;
 });
@@ -441,10 +447,13 @@ const tour = document.getElementById("tour"), stage = document.getElementById("s
 const film = document.getElementById("film");
 const intro = document.getElementById("intro"), room = document.getElementById("room");
 const fill = document.getElementById("fill"), clock = document.getElementById("clock");
-let duration = 17.5, cur = 0, shown = -1;
+let duration = ROOM_START(8) + CLIP, cur = 0, shown = -1;
 
 film.addEventListener("loadeddata", () => stage.classList.add("ready"));
-film.addEventListener("loadedmetadata", () => { if (isFinite(film.duration) && film.duration > 1) duration = film.duration; });
+film.addEventListener("loadedmetadata", () => {
+  if (isFinite(film.duration) && film.duration > 1) duration = film.duration;
+  ticks.forEach((b, i) => b.style.left = (LABELS[i].t / duration * 100) + "%");
+});
 // iOS only decodes frames for seeking after the video has been played once by a gesture
 const unlock = () => { const p = film.play(); if (p) p.then(() => film.pause()).catch(() => {}); };
 window.addEventListener("touchstart", unlock, { once: true, passive: true });
@@ -455,11 +464,11 @@ function progress() {
   const span = tour.offsetHeight - stage.offsetHeight;
   return Math.min(1, Math.max(0, -top / span));
 }
-function scrollToFrame(f) {
+function scrollToTime(t) {
   const span = tour.offsetHeight - stage.offsetHeight;
-  window.scrollTo({ top: tour.offsetTop + span * Math.min(1, timeAt(f) / duration), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+  window.scrollTo({ top: tour.offsetTop + span * Math.min(1, t / duration), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
 }
-document.getElementById("again").addEventListener("click", () => scrollToFrame(1));
+document.getElementById("again").addEventListener("click", () => scrollToTime(0));
 
 const mmss = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(Math.floor(s % 60)).padStart(2, "0");
 
@@ -474,11 +483,11 @@ function render() {
   fill.style.width = (cur / duration * 100) + "%";
   clock.textContent = mmss(cur) + " / " + mmss(duration);
 
-  intro.classList.toggle("gone", frame > 40);
-  room.classList.toggle("gone", frame <= 40);
+  intro.classList.toggle("gone", cur > 1.65);
+  room.classList.toggle("gone", cur <= 1.65);
 
   let idx = 0;
-  for (let i = 0; i < LABELS.length; i++) if (frame >= LABELS[i].f - 12) idx = i;
+  for (let i = 0; i < LABELS.length; i++) if (cur >= LABELS[i].t - 0.5) idx = i;
   if (idx !== shown) {
     shown = idx;
     const L = LABELS[idx];
@@ -491,14 +500,27 @@ function render() {
   }
 
   // minimap: camera position and heading
-  const ci = Math.min(PATH.cam.length - 1, Math.max(0, Math.round(frame / PATH.camStep)));
-  const [x, y, z, a] = PATH.cam[ci];
-  setMiniFloor(z > 3.45 && y > -4 && frame < LABELS[LABELS.length - 1].f - 60);
-  const px = Math.min(31.5, Math.max(-1.5, x)), py = Math.min(33.5, Math.max(-2.5, 20 - y));
+  const R0 = LABELS[idx].walk;
+  let px, py, a, seen = true;
+  if (!R0) {
+    const ci = Math.min(PATH.cam.length - 1, Math.max(0, Math.round(frame / PATH.camStep)));
+    const [x, y, z, h] = PATH.cam[ci];
+    setMiniFloor(z > 3.45 && y > -4 && frame < 280);
+    px = Math.min(31.5, Math.max(-1.5, x)); py = Math.min(33.5, Math.max(-2.5, 20 - y)); a = h;
+  } else {
+    // inside a room clip: glide along that room's route on the plan
+    const u = Math.min(1, Math.max(0, (cur - ROOM_START(LABELS[idx].k)) / CLIP));
+    const [p0, p1] = R0.path;
+    setMiniFloor(R0.lv === "U");
+    px = p0[0] + (p1[0] - p0[0]) * u; py = p0[1] + (p1[1] - p0[1]) * u;
+    a = (p0[2] + (p1[2] - p0[2]) * u) * Math.PI / 180;
+    seen = R0.lv !== "O";
+  }
+  dot.style.opacity = cone.style.opacity = seen ? "" : 0;
   dot.setAttribute("cx", px); dot.setAttribute("cy", py);
   const s = 0.55, L = 4.2;
   cone.setAttribute("d", `M${px},${py} L${px + L * Math.cos(a - s)},${py + L * Math.sin(a - s)} L${px + L * Math.cos(a + s)},${py + L * Math.sin(a + s)} Z`);
-  const zone = ROOM_ZONE[LABELS[idx].name];
+  const zone = LABELS[idx].zone;
   for (const k in miniRooms) miniRooms[k].classList.toggle("here", k === zone);
 
   requestAnimationFrame(render);
