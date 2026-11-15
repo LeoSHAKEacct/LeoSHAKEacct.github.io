@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daniel Car Sales Lead Bot</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: phone chat on the left, live lead-score board on the right; the rules sit below. */
+  --ink:#17202b;
+  --paper:#f3f4f6;
+  --surface:#ffffff;
+  --muted:#5d6775;
+  --line:#dde1e7;
+  --accent:#1f4e8c;
+  --accent-ink:#ffffff;
+  --hot:#d2541c;
+  --warm:#c98a12;
+  --cold:#5b7a99;
+  --chat-bg:#e9e4dc;
+  --bubble-in:#ffffff;
+  --bubble-out:#d6f5c9;
+  --display:"Archivo", "Segoe UI", system-ui, sans-serif;
+  --body:"Instrument Sans", "Segoe UI", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e7ebf0; --paper:#10151b; --surface:#19212a; --muted:#9ba6b4; --line:#2b3540;
+    --accent:#6ea2e6; --accent-ink:#0b1420; --hot:#f07a45; --warm:#e3ab3a; --cold:#8aa6c2;
+    --chat-bg:#0d1318; --bubble-in:#1e2832; --bubble-out:#1f4d36; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e7ebf0; --paper:#10151b; --surface:#19212a; --muted:#9ba6b4; --line:#2b3540;
+  --accent:#6ea2e6; --accent-ink:#0b1420; --hot:#f07a45; --warm:#e3ab3a; --cold:#8aa6c2;
+  --chat-bg:#0d1318; --bubble-in:#1e2832; --bubble-out:#1f4d36; color-scheme: dark;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.55}
+h1,h2,h3{font-family:var(--display);line-height:1.15;text-wrap:balance;margin:0}
+h1{font-size:clamp(28px,5vw,42px);font-weight:800}
+h2{font-size:clamp(21px,3vw,27px);font-weight:700}
+h3{font-size:17px;font-weight:700}
+p{margin:0}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+button{font:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:18px 0;flex-wrap:wrap}
+.brand{font-family:var(--display);font-weight:800;font-size:18px}
+.brand a{color:inherit;text-decoration:none}
+.langs{display:flex;gap:4px;background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:4px}
+.langs button{border:0;background:transparent;color:var(--ink);padding:6px 14px;border-radius:999px;font-weight:600;font-size:14px}
+.langs button[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink)}
+.hero{padding:14px 0 24px;display:grid;gap:10px;max-width:740px}
+.hero p{color:var(--muted);font-size:18px}
+.scen{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:18px}
+.scen span{font-size:14px;color:var(--muted);font-weight:600}
+.scen button{border:1px solid var(--line);background:var(--surface);color:var(--ink);border-radius:999px;padding:7px 14px;font-weight:600;font-size:14px;display:flex;gap:6px;align-items:center}
+.scen button i{width:9px;height:9px;border-radius:50%;display:inline-block}
+
+.demo{display:grid;grid-template-columns:minmax(300px,380px) 1fr;gap:28px;align-items:start}
+@media (max-width:840px){.demo{grid-template-columns:1fr}.phone{margin:0 auto}}
+.phone{width:100%;max-width:380px;height:660px;border-radius:36px;background:#0b0f13;padding:10px;box-shadow:0 20px 50px rgba(10,20,40,.18)}
+.screen{height:100%;border-radius:28px;overflow:hidden;display:flex;flex-direction:column;background:var(--chat-bg)}
+.chat-head{background:#1c2a3a;color:#fff;display:flex;align-items:center;gap:10px;padding:12px 14px}
+.avatar{width:38px;height:38px;border-radius:50%;background:#8fb3e0;color:#0b1420;display:grid;place-items:center;font-family:var(--display);font-weight:800}
+.chat-head .name{font-weight:600;line-height:1.2}
+.chat-head .status{font-size:12px;opacity:.85}
+.chat-head .restart{margin-left:auto;background:rgba(255,255,255,.15);border:0;color:#fff;border-radius:999px;padding:5px 10px;font-size:12px}
+.msgs{flex:1;overflow-y:auto;padding:14px 10px;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:84%;padding:8px 10px 6px;border-radius:10px;font-size:14.5px;line-height:1.4;box-shadow:0 1px 1px rgba(0,0,0,.08);word-wrap:break-word}
+.msg.in{background:var(--bubble-in);align-self:flex-start;border-top-left-radius:2px}
+.msg.out{background:var(--bubble-out);align-self:flex-end;border-top-right-radius:2px}
+.msg .time{display:block;text-align:right;font-size:11px;color:var(--muted);margin-top:2px}
+.qr{display:flex;flex-wrap:wrap;gap:6px;align-self:flex-start;max-width:94%}
+.qr button{border:1px solid var(--line);background:var(--bubble-in);color:var(--accent);font-weight:600;font-size:13px;padding:6px 12px;border-radius:999px}
+.typing{align-self:flex-start;background:var(--bubble-in);border-radius:10px;padding:8px 12px;font-size:13px;color:var(--muted)}
+.composer{display:flex;gap:8px;padding:8px}
+.composer input{flex:1;border:0;border-radius:999px;padding:11px 16px;font:inherit;font-size:15px;background:var(--surface);color:var(--ink)}
+.composer button{width:44px;height:44px;border-radius:50%;border:0;background:#1c2a3a;color:#fff;display:grid;place-items:center}
+
+.board{display:grid;gap:16px}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;display:grid;gap:12px}
+.scorebox{display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.score{font-family:var(--display);font-weight:800;font-size:56px;line-height:1;font-variant-numeric:tabular-nums}
+.score small{font-size:20px;color:var(--muted);font-weight:700}
+.pill{font-weight:700;font-size:14px;padding:6px 14px;border-radius:999px;color:#fff;letter-spacing:.02em}
+.pill.hot{background:var(--hot)}.pill.warm{background:var(--warm)}.pill.cold{background:var(--cold)}
+.action{font-size:14px;color:var(--muted);flex-basis:100%}
+.bar{position:relative;height:14px;border-radius:999px;background:linear-gradient(90deg,var(--cold) 0 40%,var(--warm) 40% 70%,var(--hot) 70% 100%);opacity:.9}
+.bar .mark{position:absolute;top:-5px;width:4px;height:24px;border-radius:2px;background:var(--ink);transition:left .4s ease}
+@media (prefers-reduced-motion:reduce){.bar .mark{transition:none}}
+.ticks{display:flex;justify-content:space-between;font-size:12px;color:var(--muted);font-variant-numeric:tabular-nums;position:relative;height:16px}
+.ticks span{position:absolute;transform:translateX(-50%)}
+.signals{display:grid;gap:0}
+.sig{display:grid;grid-template-columns:1fr auto auto;gap:12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line);font-size:14px}
+.sig:last-child{border-bottom:0}
+.sig .val{color:var(--muted);font-size:13px;text-align:right}
+.sig .pts{font-variant-numeric:tabular-nums;font-weight:700;min-width:58px;text-align:right}
+.sig .pts.zero{color:var(--muted);font-weight:500}
+.sig .pts.neg{color:var(--hot)}
+.alert{border:2px dashed var(--line);border-radius:12px;padding:14px;font-size:14px;color:var(--muted)}
+.alert.on{border:2px solid var(--hot);color:var(--ink);background:color-mix(in srgb,var(--hot) 8%,var(--surface))}
+.alert pre{margin:8px 0 0;white-space:pre-wrap;font-family:ui-monospace,Menlo,monospace;font-size:13px;line-height:1.5}
+.alert .ah{font-weight:700;color:var(--hot)}
+.trigger{font-size:13px;font-weight:600;color:var(--hot)}
+
+section.rules{padding:48px 0 0;display:grid;gap:16px}
+.tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+@media (max-width:840px){.tiers{grid-template-columns:1fr}}
+.tier{background:var(--surface);border:1px solid var(--line);border-top:5px solid var(--cold);border-radius:14px;padding:16px;display:grid;gap:6px;align-content:start}
+.tier.hot{border-top-color:var(--hot)}.tier.warm{border-top-color:var(--warm)}
+.tier .rng{font-family:var(--display);font-weight:700;font-variant-numeric:tabular-nums;color:var(--muted)}
+.tier p{color:var(--muted);font-size:15px}
+.lead{color:var(--muted);max-width:65ch}
+ul.trig{margin:0;padding-left:20px;color:var(--muted);display:grid;gap:4px}
+footer{padding:40px 0 48px;color:var(--muted);font-size:13px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><span id="t-brand"></span> · <a href="https://mamacita.hollyai.app/" style="color:var(--accent)">mamacita.hollyai.app</a></div>
+    <div class="langs" role="group" aria-label="Language">
+      <button id="l-en" data-l="en">EN</button><button id="l-es" data-l="es">ES</button><button id="l-pt" data-l="pt">PT</button>
+    </div>
+  </header>
+  <div class="hero"><h1 id="t-h1"></h1><p id="t-sub"></p></div>
+  <div class="scen">
+    <span id="t-play"></span>
+    <button data-s="hot"><i style="background:var(--hot)"></i><b id="t-shot"></b></button>
+    <button data-s="warm"><i style="background:var(--warm)"></i><b id="t-swarm"></b></button>
+    <button data-s="cold"><i style="background:var(--cold)"></i><b id="t-scold"></b></button>
+  </div>
+
+  <div class="demo">
+    <div class="phone"><div class="screen">
+      <div class="chat-head">
+        <div class="avatar" aria-hidden="true">D</div>
+        <div><div class="name" id="t-name"></div><div class="status" id="t-status"></div></div>
+        <button class="restart" id="restart"></button>
+      </div>
+      <div class="msgs" id="msgs" aria-live="polite"></div>
+      <form class="composer" id="composer">
+        <input id="input" autocomplete="off" aria-label="Message">
+        <button type="submit" aria-label="Send"><svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M3 20.5 21.5 12 3 3.5 3 10l13 2-13 2z"/></svg></button>
+      </form>
+    </div></div>
+
+    <div class="board">
+      <div class="panel">
+        <h3 id="t-scoreh"></h3>
+        <div class="scorebox">
+          <div class="score"><span id="score">0</span><small>/100</small></div>
+          <span class="pill cold" id="pill"></span>
+          <div class="action" id="action"></div>
+        </div>
+        <div>
+          <div class="bar"><div class="mark" id="mark" style="left:0%"></div></div>
+          <div class="ticks"><span style="left:0%;transform:none">0</span><span style="left:40%">40</span><span style="left:70%">70</span><span style="right:0;transform:none">100</span></div>
+        </div>
+        <div class="trigger" id="trigger"></div>
+        <div class="signals" id="signals"></div>
+      </div>
+      <div class="alert" id="alert"></div>
+    </div>
+  </div>
+
+  <section class="rules">
+    <h2 id="t-rulesh"></h2>
+    <p class="lead" id="t-rulesp"></p>
+    <div class="tiers" id="tiers"></div>
+    <h3 id="t-trigh"></h3>
+    <ul class="trig" id="trigs"></ul>
+  </section>
+  <footer><p id="t-foot"></p><p style="margin-top:8px"><a href="https://mamacita.hollyai.app/" style="color:var(--accent);font-weight:600">mamacita.hollyai.app</a></p></footer>
+</div>
+
+<script>
+// Each step: key, max points, options [label, points, value-for-alert, synonyms]
+const STEPS=["model","timeline","budget","payment","tradein","area","testdrive"];
+const MAX={model:15,timeline:25,budget:10,payment:15,tradein:10,area:5,testdrive:20};
+
+const T={
+en:{
+ brand:"Daniel · Car Sales Assistant", h1:"Daniel only talks to buyers who are ready",
+ sub:"The WhatsApp assistant answers every lead in seconds, asks a few questions and scores the lead live. At 70 points, Daniel gets an alert with everything he needs to call.",
+ play:"Play a scenario:", shot:"Hot buyer", swarm:"Warm lead", scold:"Just looking",
+ name:"Daniel · Car Sales", status:"assistant · replies instantly", restart:"Restart", ph:"Type a reply…",
+ scoreh:"Live lead score", tier:{hot:"HOT",warm:"WARM",cold:"COLD"},
+ act:{hot:"Handed to Daniel now",warm:"Bot keeps the chat going and offers a test drive",cold:"Bot sends the brochure and asks to send offers later"},
+ trig:"Instant handoff: ", trigs:{human:"customer asked for a person",buy:"customer wants to buy or reserve",discount:"customer is negotiating price",fleet:"company or fleet purchase"},
+ sig:{model:"Model",timeline:"Timeline",budget:"Budget",payment:"Payment",tradein:"Trade-in",area:"Location",testdrive:"Test drive"},
+ notAsked:"not asked yet",
+ alertWait:"The alert to Daniel appears here when the lead turns hot.",
+ alertH:"Alert sent to Daniel's WhatsApp",
+ alertLines:(d,s)=>`HOT LEAD · ${s}/100\nWants: ${d.model||"?"}\nTimeline: ${d.timeline||"?"}\nPayment: ${d.payment||"?"}\nTrade-in: ${d.tradein||"?"}\nLocation: ${d.area||"?"}\nAsked for: ${d.testdrive||"?"}\nReply WON, VISIT, LOST or LATER after the call.`,
+ hello:"Hi! I'm Daniel's assistant. I can help with models, prices, financing and test drives.",
+ q:{model:"Which model are you interested in?",timeline:"When are you planning to buy?",budget:"Do you have a budget in mind?",payment:"How would you like to pay?",tradein:"Do you have a car to trade in?",area:"Where are you based?",testdrive:"Would you like to book a test drive?"},
+ o:{
+  model:[["Ranger XLT",15,"Ranger XLT",["ranger"]],["Territory Titanium",15,"Territory Titanium",["territory"]],["Bronco Sport",15,"Bronco Sport",["bronco"]],["A pickup or an SUV",8,"pickup or SUV, model open",["pickup","suv","truck","camioneta"]],["Just looking",0,"no model yet",["looking","mirando","ver"]]],
+  timeline:[["This month",25,"this month",["month","week","now","soon","mes","semana","ya","agora","este"]],["In 1–3 months",15,"1–3 months",["1","2","3","months","meses"]],["No rush",0,"no date",["rush","later","prisa","pressa","depois","despues"]]],
+  budget:[["Yes, it fits",10,"budget fits",["yes","fits","si","sim","tengo","tenho"]],["Just want the price",3,"asked the price",["price","precio","preco","cuanto","quanto"]]],
+  payment:[["Cash",15,"cash",["cash","contado","efectivo","vista"]],["Financing approved",15,"financing approved",["approved","aprobado","aprovado"]],["Need a financing quote",10,"wants a financing quote",["financ","credit","credito","quote","cotizacion"]],["Not sure",0,"not sure",["sure","se","sei"]]],
+  tradein:[["Yes, 2018 sedan, 65,000 km",10,"2018 sedan, 65,000 km",["yes","si","sim","sedan","km"]],["No",0,"none",["no","nao"]]],
+  area:[["In town",5,"in the service area",["town","here","ciudad","aqui","cidade","local"]],["Another city",-10,"outside the service area",["another","other","otra","outra","far","lejos","longe"]]],
+  testdrive:[["Saturday morning",20,"test drive Saturday morning",["saturday","sabado","morning","manana"]],["A weekday afternoon",20,"test drive weekday afternoon",["weekday","afternoon","tarde","semana"]],["Not now",0,"not now",["not","now","ahora","agora","nao","no"]]]
+ },
+ handoff:"Great, thank you! Daniel, our sales advisor, will message you in the next few minutes to confirm everything.",
+ warmEnd:"Thanks! I'm sending you the brochure and a financing example now. Shall I hold two test drive slots for you next week?",
+ coldEnd:"Thanks for your interest! Here's the brochure with prices. Can I send you our monthly offers on WhatsApp?",
+ again:"Sorry, I didn't catch that. Please tap one of the options.",
+ rulesh:"When does a lead go to Daniel?", rulesp:"Every answer adds points, up to 100. The tier decides who acts next. These are starting values to agree with Daniel.",
+ tiers:[["hot","Hot","70–100","Instant alert to Daniel. He replies within 15 minutes during opening hours."],["warm","Warm","40–69","The bot follows up on days 3, 7 and 14 with test drive times and offers. Daniel gets a weekly summary."],["cold","Cold","0–39","The bot sends the brochure and monthly offers to people who opted in. A reply re-scores the lead."]],
+ trigh:"These skip the score and go straight to Daniel",
+ trigList:["Asks for a test drive or a visit on a day","Says they want to buy, reserve or pay a deposit","Types HUMAN or asks for a person","Asks for a discount or negotiates price","A company or fleet wants two or more vehicles"],
+ foot:"Demo with sample models and a fictional customer. Model names are for illustration; the real bot uses Daniel's current stock."
+},
+es:{
+ brand:"Daniel · Asistente de ventas", h1:"Daniel solo habla con compradores listos",
+ sub:"El asistente de WhatsApp responde cada lead en segundos, hace unas preguntas y califica el lead en vivo. Al llegar a 70 puntos, Daniel recibe una alerta con todo lo que necesita para llamar.",
+ play:"Ver un escenario:", shot:"Comprador listo", swarm:"Lead tibio", scold:"Solo mirando",
+ name:"Daniel · Ventas de autos", status:"asistente · responde al instante", restart:"Reiniciar", ph:"Escribe una respuesta…",
+ scoreh:"Puntaje del lead en vivo", tier:{hot:"CALIENTE",warm:"TIBIO",cold:"FRÍO"},
+ act:{hot:"Pasado a Daniel ahora",warm:"El bot sigue la conversación y ofrece un test drive",cold:"El bot envía el catálogo y pide permiso para enviar ofertas"},
+ trig:"Paso inmediato: ", trigs:{human:"el cliente pidió una persona",buy:"el cliente quiere comprar o reservar",discount:"el cliente está negociando el precio",fleet:"compra de empresa o flota"},
+ sig:{model:"Modelo",timeline:"Plazo",budget:"Presupuesto",payment:"Pago",tradein:"Retoma",area:"Ubicación",testdrive:"Test drive"},
+ notAsked:"aún no preguntado",
+ alertWait:"La alerta para Daniel aparece aquí cuando el lead se pone caliente.",
+ alertH:"Alerta enviada al WhatsApp de Daniel",
+ alertLines:(d,s)=>`LEAD CALIENTE · ${s}/100\nQuiere: ${d.model||"?"}\nPlazo: ${d.timeline||"?"}\nPago: ${d.payment||"?"}\nRetoma: ${d.tradein||"?"}\nUbicación: ${d.area||"?"}\nPidió: ${d.testdrive||"?"}\nResponde VENDIDO, VISITA, PERDIDO o LUEGO después de la llamada.`,
+ hello:"¡Hola! Soy el asistente de Daniel. Te ayudo con modelos, precios, financiación y test drives.",
+ q:{model:"¿Qué modelo te interesa?",timeline:"¿Cuándo piensas comprar?",budget:"¿Tienes un presupuesto en mente?",payment:"¿Cómo te gustaría pagar?",tradein:"¿Tienes un carro para dar como parte de pago?",area:"¿Dónde estás?",testdrive:"¿Quieres agendar un test drive?"},
+ o:null,
+ handoff:"¡Perfecto, gracias! Daniel, nuestro asesor comercial, te escribirá en los próximos minutos para confirmar todo.",
+ warmEnd:"¡Gracias! Te envío el catálogo y un ejemplo de financiación. ¿Te guardo dos horarios de test drive para la próxima semana?",
+ coldEnd:"¡Gracias por tu interés! Aquí tienes el catálogo con precios. ¿Te puedo enviar nuestras ofertas mensuales por WhatsApp?",
+ again:"Perdón, no te entendí. Toca una de las opciones, por favor.",
+ rulesh:"¿Cuándo pasa un lead a Daniel?", rulesp:"Cada respuesta suma puntos, hasta 100. El nivel decide quién actúa. Son valores iniciales para acordar con Daniel.",
+ tiers:[["hot","Caliente","70–100","Alerta inmediata a Daniel. Responde en menos de 15 minutos en horario de atención."],["warm","Tibio","40–69","El bot hace seguimiento los días 3, 7 y 14 con horarios de test drive y ofertas. Daniel recibe un resumen semanal."],["cold","Frío","0–39","El bot envía el catálogo y ofertas mensuales a quien aceptó recibirlas. Si responde, el lead se recalifica."]],
+ trigh:"Estos van directo a Daniel, sin importar el puntaje",
+ trigList:["Pide un test drive o una visita para un día","Dice que quiere comprar, reservar o dar un anticipo","Escribe HUMANO o pide hablar con una persona","Pide descuento o negocia el precio","Una empresa o flota quiere dos o más vehículos"],
+ foot:"Demo con modelos de ejemplo y un cliente ficticio. Los nombres de modelos son ilustrativos; el bot real usa el inventario actual de Daniel."
+},
+pt:{
+ brand:"Daniel · Assistente de vendas", h1:"O Daniel só fala com compradores prontos",
+ sub:"O assistente de WhatsApp responde a cada lead em segundos, faz algumas perguntas e pontua o lead em tempo real. Aos 70 pontos, o Daniel recebe um alerta com tudo o que precisa para ligar.",
+ play:"Ver um cenário:", shot:"Comprador pronto", swarm:"Lead morno", scold:"Só a ver",
+ name:"Daniel · Venda de automóveis", status:"assistente · responde na hora", restart:"Recomeçar", ph:"Escreva uma resposta…",
+ scoreh:"Pontuação do lead em tempo real", tier:{hot:"QUENTE",warm:"MORNO",cold:"FRIO"},
+ act:{hot:"Passado ao Daniel agora",warm:"O bot continua a conversa e oferece um test drive",cold:"O bot envia o catálogo e pede para enviar ofertas"},
+ trig:"Passagem imediata: ", trigs:{human:"o cliente pediu uma pessoa",buy:"o cliente quer comprar ou reservar",discount:"o cliente está a negociar o preço",fleet:"compra de empresa ou frota"},
+ sig:{model:"Modelo",timeline:"Prazo",budget:"Orçamento",payment:"Pagamento",tradein:"Retoma",area:"Localização",testdrive:"Test drive"},
+ notAsked:"ainda não perguntado",
+ alertWait:"O alerta para o Daniel aparece aqui quando o lead fica quente.",
+ alertH:"Alerta enviado para o WhatsApp do Daniel",
+ alertLines:(d,s)=>`LEAD QUENTE · ${s}/100\nQuer: ${d.model||"?"}\nPrazo: ${d.timeline||"?"}\nPagamento: ${d.payment||"?"}\nRetoma: ${d.tradein||"?"}\nLocalização: ${d.area||"?"}\nPediu: ${d.testdrive||"?"}\nResponda VENDIDO, VISITA, PERDIDO ou DEPOIS após a chamada.`,
+ hello:"Olá! Sou o assistente do Daniel. Ajudo com modelos, preços, financiamento e test drives.",
+ q:{model:"Que modelo lhe interessa?",timeline:"Quando pensa comprar?",budget:"Tem um orçamento em mente?",payment:"Como gostaria de pagar?",tradein:"Tem um carro para retoma?",area:"Onde está?",testdrive:"Quer marcar um test drive?"},
+ o:null,
+ handoff:"Ótimo, obrigado! O Daniel, o nosso consultor comercial, vai enviar-lhe mensagem nos próximos minutos para confirmar tudo.",
+ warmEnd:"Obrigado! Envio-lhe já o catálogo e um exemplo de financiamento. Reservo-lhe dois horários de test drive para a próxima semana?",
+ coldEnd:"Obrigado pelo interesse! Aqui tem o catálogo com preços. Posso enviar-lhe as nossas ofertas mensais por WhatsApp?",
+ again:"Desculpe, não percebi. Toque numa das opções, por favor.",
+ rulesh:"Quando é que um lead passa para o Daniel?", rulesp:"Cada resposta soma pontos, até 100. O nível decide quem age a seguir. São valores iniciais para acordar com o Daniel.",
+ tiers:[["hot","Quente","70–100","Alerta imediato ao Daniel. Responde em menos de 15 minutos no horário de funcionamento."],["warm","Morno","40–69","O bot faz seguimento nos dias 3, 7 e 14 com horários de test drive e ofertas. O Daniel recebe um resumo semanal."],["cold","Frio","0–39","O bot envia o catálogo e ofertas mensais a quem aceitou recebê-las. Se responder, o lead é pontuado de novo."]],
+ trigh:"Estes passam logo para o Daniel, seja qual for a pontuação",
+ trigList:["Pede um test drive ou uma visita para um dia","Diz que quer comprar, reservar ou dar um sinal","Escreve HUMANO ou pede para falar com uma pessoa","Pede desconto ou negoceia o preço","Uma empresa ou frota quer dois ou mais veículos"],
+ foot:"Demo com modelos de exemplo e um cliente fictício. Os nomes dos modelos são ilustrativos; o bot real usa o stock atual do Daniel."
+}};
+// Option labels per language; points and synonyms are shared with English.
+const OL={
+ es:{model:["Ranger XLT","Territory Titanium","Bronco Sport","Una camioneta o SUV","Solo mirando"],timeline:["Este mes","En 1–3 meses","Sin prisa"],budget:["Sí, me alcanza","Solo quiero el precio"],payment:["De contado","Crédito aprobado","Necesito cotizar crédito","No sé"],tradein:["Sí, sedán 2018, 65.000 km","No"],area:["En la ciudad","Otra ciudad"],testdrive:["Sábado en la mañana","Un día entre semana en la tarde","Ahora no"]},
+ pt:{model:["Ranger XLT","Territory Titanium","Bronco Sport","Uma pickup ou SUV","Só estou a ver"],timeline:["Este mês","Em 1–3 meses","Sem pressa"],budget:["Sim, cabe no orçamento","Só quero saber o preço"],payment:["A pronto","Financiamento aprovado","Preciso de simular crédito","Não sei"],tradein:["Sim, berlina 2018, 65.000 km","Não"],area:["Na cidade","Outra cidade"],testdrive:["Sábado de manhã","Um dia útil à tarde","Agora não"]}
+};
+const OV={ // values shown in the alert
+ es:{model:["Ranger XLT","Territory Titanium","Bronco Sport","camioneta o SUV, modelo abierto","sin modelo aún"],timeline:["este mes","1–3 meses","sin fecha"],budget:["presupuesto alcanza","preguntó el precio"],payment:["de contado","crédito aprobado","quiere cotizar crédito","no sabe"],tradein:["sedán 2018, 65.000 km","ninguna"],area:["en la zona de servicio","fuera de la zona"],testdrive:["test drive sábado en la mañana","test drive entre semana en la tarde","ahora no"]},
+ pt:{model:["Ranger XLT","Territory Titanium","Bronco Sport","pickup ou SUV, modelo em aberto","ainda sem modelo"],timeline:["este mês","1–3 meses","sem data"],budget:["orçamento cabe","perguntou o preço"],payment:["a pronto","financiamento aprovado","quer simular crédito","não sabe"],tradein:["berlina 2018, 65.000 km","nenhuma"],area:["na zona de serviço","fora da zona"],testdrive:["test drive sábado de manhã","test drive dia útil à tarde","agora não"]}
+};
+function opts(step){
+  return T.en.o[step].map((o,i)=>({label:lang==="en"?o[0]:OL[lang][step][i],pts:o[1],val:lang==="en"?o[2]:OV[lang][step][i],syn:o[3]}));
+}
+const SCEN={hot:[0,0,0,2,0,0,0],warm:[3,1,1,2,1,0,2],cold:[4,2,1,3,1,0,2]};
+
+let lang="en",stepIdx=0,pts={},vals={},trigger=null,done=false,busy=false,runId=0;
+const $=id=>document.getElementById(id),msgs=$("msgs");
+const L=()=>T[lang];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const norm=s=>s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"");
+const now=()=>{const d=new Date();return String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0")};
+const total=()=>Math.max(0,Math.min(100,Object.values(pts).reduce((a,b)=>a+b,0)));
+const tierOf=s=>(trigger||s>=70)?"hot":s>=40?"warm":"cold";
+
+function addMsg(text,dir){
+  const el=document.createElement("div");el.className="msg "+dir;
+  el.innerHTML=esc(text).replace(/\n/g,"<br>")+`<span class="time">${now()}${dir==="out"?" ✓✓":""}</span>`;
+  msgs.appendChild(el);msgs.scrollTop=msgs.scrollHeight;
+}
+function clearQR(){msgs.querySelectorAll(".qr").forEach(q=>q.remove())}
+function addQR(list){
+  const q=document.createElement("div");q.className="qr";
+  list.forEach((o,i)=>{const b=document.createElement("button");b.type="button";b.textContent=o.label;b.onclick=()=>{if(!busy)answer(i)};q.appendChild(b)});
+  msgs.appendChild(q);msgs.scrollTop=msgs.scrollHeight;
+}
+function bot(fn,delay){
+  busy=true;const my=runId;
+  const ty=document.createElement("div");ty.className="typing";ty.textContent="…";msgs.appendChild(ty);msgs.scrollTop=msgs.scrollHeight;
+  setTimeout(()=>{ty.remove();if(my!==runId)return;busy=false;fn()},delay||500);
+}
+function ask(){const s=STEPS[stepIdx];addMsg(L().q[s],"in");addQR(opts(s))}
+
+function answer(i,typed){
+  if(done)return;
+  const s=STEPS[stepIdx],o=opts(s)[i];
+  clearQR();addMsg(typed||o.label,"out");
+  pts[s]=o.pts;vals[s]=o.val;render();
+  stepIdx++;
+  const sc=total();
+  if(s==="testdrive"&&o.pts>0&&!trigger){trigger="testdrive"}
+  if(stepIdx>=STEPS.length||trigger){finish();return}
+  bot(ask);
+}
+function finish(){
+  done=true;render();
+  const tier=tierOf(total());
+  bot(()=>addMsg(tier==="hot"?L().handoff:tier==="warm"?L().warmEnd:L().coldEnd,"in"));
+}
+function detectTrigger(n){
+  if(/\b(human|humano|persona|pessoa|agent|agente|asesor)\b/.test(n))return "human";
+  if(/\b(discount|descuento|desconto|rebaja|cheaper|mas barato|mais barato)\b/.test(n))return "discount";
+  if(/\b(reserve|reservar|reserva|deposit|anticipo|sinal|buy now|comprar ya|comprar ja|quiero comprar|quero comprar|i want to buy)\b/.test(n))return "buy";
+  if(/\b(fleet|flota|frota|company|empresa)\b/.test(n))return "fleet";
+  return null;
+}
+function typed(text){
+  text=text.trim();if(!text||busy)return;
+  const n=norm(text);
+  const tr=detectTrigger(n);
+  if(tr&&!done){clearQR();addMsg(text,"out");trigger=tr;finish();return}
+  if(done){addMsg(text,"out");bot(()=>addMsg(tierOf(total())==="hot"?L().handoff:L().again,"in"));return}
+  const s=STEPS[stepIdx],list=opts(s);
+  let hit=list.findIndex(o=>norm(o.label)===n);
+  if(hit<0)hit=list.findIndex(o=>o.syn.some(w=>n.includes(w)));
+  if(hit>=0){answer(hit,text);return}
+  clearQR();addMsg(text,"out");bot(()=>{addMsg(L().again,"in");addQR(list)});
+}
+
+function render(){
+  const sc=total(),tier=tierOf(sc),Lx=L();
+  $("score").textContent=sc;
+  const pill=$("pill");pill.className="pill "+tier;pill.textContent=Lx.tier[tier];
+  $("action").textContent=Lx.act[tier];
+  $("mark").style.left=`calc(${sc}% - 2px)`;
+  $("trigger").textContent=trigger&&trigger!=="testdrive"?Lx.trig+Lx.trigs[trigger]:"";
+  $("signals").innerHTML=STEPS.map(s=>{
+    const has=s in pts,p=pts[s]||0;
+    const cls=!has||p===0?"pts zero":p<0?"pts neg":"pts";
+    return `<div class="sig"><span>${esc(Lx.sig[s])}</span><span class="val">${esc(has?vals[s]:Lx.notAsked)}</span><span class="${cls}">${has?(p>0?"+":"")+p:"–"} / ${MAX[s]}</span></div>`;
+  }).join("");
+  const al=$("alert");
+  if(done&&tier==="hot"){al.className="alert on";al.innerHTML=`<div class="ah">${esc(Lx.alertH)}</div><pre>${esc(Lx.alertLines(vals,sc))}</pre>`}
+  else{al.className="alert";al.textContent=Lx.alertWait}
+}
+function renderPage(){
+  const Lx=L();document.documentElement.lang=lang;
+  ["en","es","pt"].forEach(l=>$("l-"+l).setAttribute("aria-pressed",String(l===lang)));
+  const f=(id,v)=>$(id).textContent=v;
+  f("t-brand",Lx.brand);f("t-h1",Lx.h1);f("t-sub",Lx.sub);f("t-play",Lx.play);f("t-shot",Lx.shot);f("t-swarm",Lx.swarm);f("t-scold",Lx.scold);
+  f("t-name",Lx.name);f("t-status",Lx.status);f("restart",Lx.restart);$("input").placeholder=Lx.ph;f("t-scoreh",Lx.scoreh);
+  f("t-rulesh",Lx.rulesh);f("t-rulesp",Lx.rulesp);f("t-trigh",Lx.trigh);f("t-foot",Lx.foot);
+  $("tiers").innerHTML=Lx.tiers.map(([c,n,r,p])=>`<div class="tier ${c}"><h3>${esc(n)}</h3><span class="rng">${esc(r)}</span><p>${esc(p)}</p></div>`).join("");
+  $("trigs").innerHTML=Lx.trigList.map(x=>`<li>${esc(x)}</li>`).join("");
+}
+function start(){
+  runId++;busy=false;msgs.innerHTML="";stepIdx=0;pts={};vals={};trigger=null;done=false;render();
+  addMsg(L().hello,"in");ask();
+}
+function play(name){
+  start();const seq=SCEN[name],my=runId;let k=0;
+  const nextStep=()=>{
+    if(my!==runId||done||k>=seq.length)return;
+    if(busy){setTimeout(nextStep,200);return}
+    answer(seq[k++]);setTimeout(nextStep,1100);
+  };
+  setTimeout(nextStep,700);
+}
+function setLang(l){lang=l;renderPage();start();try{history.replaceState(null,"","#"+l)}catch(e){}}
+document.querySelectorAll(".langs button").forEach(b=>b.addEventListener("click",()=>setLang(b.dataset.l)));
+document.querySelectorAll(".scen button").forEach(b=>b.addEventListener("click",()=>play(b.dataset.s)));
+$("composer").addEventListener("submit",e=>{e.preventDefault();const v=$("input").value;$("input").value="";typed(v)});
+$("restart").addEventListener("click",start);
+const h=(location.hash||"").slice(1);
+setLang(["en","es","pt"].includes(h)?h:"en");
+</script>
+</body>
+</html>

@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Daniel – Plan para pasar leads calientes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@700;800&family=Instrument+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: one reading column; tables scroll sideways on phones. */
+  --ink:#17202b; --paper:#f6f7f9; --surface:#ffffff; --muted:#5d6775; --line:#dde1e7;
+  --accent:#1f4e8c; --hot:#d2541c; --warm:#c98a12; --cold:#5b7a99;
+  --display:"Archivo","Segoe UI",system-ui,sans-serif; --body:"Instrument Sans","Segoe UI",system-ui,sans-serif;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{--ink:#e7ebf0;--paper:#10151b;--surface:#19212a;--muted:#9ba6b4;--line:#2b3540;--accent:#6ea2e6;--hot:#f07a45;--warm:#e3ab3a;--cold:#8aa6c2;color-scheme:dark}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--body);font-size:16.5px;line-height:1.6}
+main{max-width:780px;margin:0 auto;padding:32px 18px 64px}
+h1,h2{font-family:var(--display);line-height:1.15;text-wrap:balance}
+h1{font-size:clamp(28px,5vw,38px);margin:0 0 8px}
+h2{font-size:22px;margin:40px 0 10px}
+.by{color:var(--muted);font-size:14px}
+.by a,a{color:var(--accent);font-weight:600}
+p{margin:0 0 12px;max-width:68ch}
+ul{padding-left:20px;margin:0 0 12px}
+li{margin-bottom:4px}
+.tw{overflow-x:auto;margin:8px 0 12px;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-weight:600;background:color-mix(in srgb,var(--accent) 7%,var(--surface))}
+tr:last-child td{border-bottom:0}
+td.n{white-space:nowrap;font-variant-numeric:tabular-nums;font-weight:600}
+.tag{display:inline-block;color:#fff;font-weight:700;font-size:13px;padding:2px 10px;border-radius:999px}
+.hot{background:var(--hot)}.warm{background:var(--warm)}.cold{background:var(--cold)}
+pre{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--hot);border-radius:10px;padding:14px;font-size:13.5px;white-space:pre-wrap;line-height:1.5}
+.check li{list-style:none;margin-left:-20px}
+.check li::before{content:"☐ ";color:var(--muted)}
+.cta{margin-top:40px;padding:18px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+</style>
+</head>
+<body>
+<main>
+<h1>Daniel – Plan para pasar leads calientes</h1>
+<p class="by">14 de noviembre de 2026 · <a href="https://mamacita.hollyai.app/">mamacita.hollyai.app</a> · <a href="../daniel-demo/#es">Ver la demo</a></p>
+
+<h2>Objetivo</h2>
+<p>El bot pasa un lead a Daniel solo cuando llega a 70 puntos o más sobre 100, o cuando ocurre un caso de paso inmediato. Los demás se quedan con el bot hasta que estén listos.</p>
+<ul>
+<li>El bot responde cada lead de WhatsApp en segundos, de día o de noche.</li>
+<li>Hace hasta seis preguntas cortas: modelo, plazo, pago, retoma, test drive y ubicación.</li>
+<li>Cada respuesta suma puntos. El puntaje se actualiza después de cada mensaje.</li>
+<li>Daniel dedica su tiempo a quien está listo para visitar o comprar. El bot hace el seguimiento de los demás.</li>
+</ul>
+
+<h2>Puntaje del lead</h2>
+<p>El puntaje es la suma de los puntos de abajo, con un máximo de 100. Son valores iniciales para acordar con Daniel.</p>
+<div class="tw"><table>
+<tr><th>Señal</th><th>Qué pregunta o detecta el bot</th><th>Puntos</th></tr>
+<tr><td>Plazo</td><td>“¿Cuándo piensas comprar?” Esta semana o este mes = 25 · en 1–3 meses = 15 · más adelante o “solo mirando” = 0</td><td class="n">0–25</td></tr>
+<tr><td>Test drive o visita</td><td>Pide un test drive, una visita o un día concreto</td><td class="n">20</td></tr>
+<tr><td>Modelo</td><td>Dice modelo y versión (Ranger XLT) = 15 · solo el tipo (camioneta, SUV) = 8</td><td class="n">0–15</td></tr>
+<tr><td>Pago</td><td>De contado o crédito ya aprobado = 15 · quiere cotizar un crédito = 10</td><td class="n">0–15</td></tr>
+<tr><td>Presupuesto</td><td>Da un presupuesto que alcanza para el modelo = 10 · solo pregunta el precio = 3</td><td class="n">0–10</td></tr>
+<tr><td>Retoma</td><td>Tiene un carro para dar como parte de pago y dice modelo, año y km</td><td class="n">10</td></tr>
+<tr><td>Contacto y zona</td><td>Da su nombre y vive en la zona que atiende Daniel</td><td class="n">5</td></tr>
+<tr><td>Fuera de la zona</td><td>Vive fuera de la zona que atiende Daniel</td><td class="n">−10</td></tr>
+</table></div>
+<p>Los mensajes sobre taller, repuestos o empleo no son leads de venta. El bot los envía al contacto correcto y no los puntúa.</p>
+
+<h2>Caliente, tibio y frío</h2>
+<p>Solo los leads calientes llegan a Daniel de inmediato. Los tibios le llegan una vez por semana en un resumen.</p>
+<div class="tw"><table>
+<tr><th>Nivel</th><th>Puntaje</th><th>Qué suele significar</th><th>Qué pasa</th><th>Responsable</th></tr>
+<tr><td><span class="tag hot">Caliente</span></td><td class="n">70–100</td><td>Sabe qué modelo quiere, compra en menos de un mes, pide test drive</td><td>Aviso inmediato por WhatsApp a Daniel; el bot le dice al cliente que Daniel lo va a llamar</td><td>Daniel</td></tr>
+<tr><td><span class="tag warm">Tibio</span></td><td class="n">40–69</td><td>Interesado, compra en 1–3 meses o falta saber cómo paga</td><td>El bot sigue la conversación, ofrece test drive y recalifica cada respuesta</td><td>Bot, con resumen semanal a Daniel</td></tr>
+<tr><td><span class="tag cold">Frío</span></td><td class="n">0–39</td><td>Solo mirando o solo preguntó el precio</td><td>El bot envía el catálogo y un ejemplo de crédito y pide permiso para enviar ofertas</td><td>Bot</td></tr>
+<tr><td>No es lead de venta</td><td>sin puntaje</td><td>Taller, repuestos, empleo, número equivocado</td><td>El bot comparte el contacto correcto</td><td>Bot</td></tr>
+</table></div>
+
+<h2>Casos que pasan directo a Daniel</h2>
+<p>Cualquiera de estos envía el lead a Daniel al instante, sin importar el puntaje.</p>
+<ul>
+<li>El cliente pide un test drive o una visita para un día concreto.</li>
+<li>El cliente dice que quiere comprar, reservar o dar un anticipo.</li>
+<li>El cliente escribe HUMANO o pide hablar con una persona.</li>
+<li>Una empresa o flota quiere dos o más vehículos.</li>
+<li>El cliente pide descuento o negocia el precio. El bot nunca negocia.</li>
+<li>El cliente está molesto o tiene una queja.</li>
+<li>El cliente ya le compró a Daniel antes.</li>
+</ul>
+
+<h2>El aviso a Daniel</h2>
+<p>Daniel recibe un solo mensaje de WhatsApp con todo lo que necesita para llamar, sin tener que leer toda la conversación.</p>
+<pre>LEAD CALIENTE · 85/100
+Carlos R. · vive en la zona de servicio
+Quiere: Ranger XLT, gris
+Plazo: este mes
+Pago: crédito, 20% de cuota inicial
+Retoma: sedán 2018, 65.000 km
+Pidió: test drive el sábado en la mañana
+Responde VENDIDO, VISITA, PERDIDO o LUEGO después de la llamada.</pre>
+<ul>
+<li><b>Tiempo de respuesta:</b> Daniel responde en menos de 15 minutos en horario de atención. Fuera de horario, el bot le dice al cliente que Daniel lo llamará a primera hora del día siguiente.</li>
+<li><b>Respaldo:</b> si Daniel no responde en 30 minutos, el bot le avisa otra vez y luego a un vendedor de respaldo.</li>
+<li><b>Resultado:</b> Daniel responde el aviso con VENDIDO, VISITA, PERDIDO o LUEGO. Así el reporte es exacto y se ve qué señales terminan en venta.</li>
+<li><b>Lo que ve el cliente:</b> “Daniel, nuestro asesor comercial, te escribirá en unos minutos con los detalles.”</li>
+</ul>
+
+<h2>Seguimiento de leads tibios y fríos</h2>
+<p>El bot recalifica cada respuesta, así que un lead tibio o frío puede volverse caliente en cualquier momento.</p>
+<div class="tw"><table>
+<tr><th>Día</th><th>Lead tibio</th><th>Lead frío</th></tr>
+<tr><td class="n">0</td><td>Catálogo, ejemplo de crédito y oferta de un horario de test drive</td><td>Catálogo y ejemplo de crédito; pide permiso para enviar ofertas</td></tr>
+<tr><td class="n">3</td><td>Dos horarios concretos de test drive</td><td>nada</td></tr>
+<tr><td class="n">7</td><td>Seguimiento: “¿Ya decidiste la versión?”</td><td>nada</td></tr>
+<tr><td class="n">14</td><td>Nuevo inventario o promoción del mes</td><td>nada</td></tr>
+<tr><td class="n">30</td><td>Último seguimiento, luego pasa a frío</td><td>Oferta mensual, solo si aceptó recibirlas</td></tr>
+</table></div>
+<p>Los mensajes enviados más de 24 horas después del último mensaje del cliente necesitan una plantilla de WhatsApp aprobada por Meta, y Meta cobra por cada mensaje. Por eso los seguimientos son pocos y solo con permiso.</p>
+
+<h2>Para acordar con Daniel en la reunión inicial</h2>
+<ul class="check">
+<li>Qué modelos y versiones debe conocer el bot, con precios desde</li>
+<li>Si pedir un test drive basta para que el lead sea caliente</li>
+<li>El puntaje que cuenta como caliente: 70, más alto o más bajo</li>
+<li>El horario en que Daniel puede responder y quién lo cubre cuando no puede</li>
+<li>A dónde llegan los avisos: el WhatsApp de Daniel, un grupo del equipo o un CRM</li>
+<li>Qué financieras mencionar y qué puede decir el bot sobre tasas</li>
+<li>Qué datos pide el bot para la retoma: modelo, año, km, fotos</li>
+<li>Lo que el bot nunca debe prometer: descuentos, fechas de entrega, disponibilidad</li>
+<li>Las ciudades o zonas que atiende Daniel</li>
+<li>Los idiomas en que debe responder el bot</li>
+</ul>
+
+<h2>Revisión a los 30 días</h2>
+<p>Después del primer mes, revisar estos números y ajustar los puntos hacia las señales que terminaron en venta. Las metas son propuestas.</p>
+<div class="tw"><table>
+<tr><th>Métrica</th><th>Meta propuesta</th></tr>
+<tr><td>Tiempo de primera respuesta del bot</td><td>menos de 1 minuto</td></tr>
+<tr><td>Conversaciones donde el bot obtiene todas las respuestas</td><td>60% o más</td></tr>
+<tr><td>Tiempo de respuesta de Daniel a leads calientes</td><td>menos de 15 minutos</td></tr>
+<tr><td>Leads calientes que agendan test drive o visita</td><td>50% o más</td></tr>
+<tr><td>Leads tibios que se vuelven calientes en 30 días</td><td>15% o más</td></tr>
+<tr><td>Leads calientes por semana y ventas que generan</td><td>medir una base en el primer mes</td></tr>
+</table></div>
+
+<div class="cta"><b>¿Quieres verlo funcionando?</b> <a href="../daniel-demo/#es">Abre la demo del asistente</a> o visita <a href="https://mamacita.hollyai.app/">mamacita.hollyai.app</a>.</div>
+</main>
+</body>
+</html>
