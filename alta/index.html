@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="description" content="Casa Alta: a single-storey courtyard house on the edge of a valley. The pencil plan rises into the house, then a walk through every room to the balcony at sunset. By worldmatters.">
+<meta property="og:title" content="Casa Alta · worldmatters">
+<meta property="og:image" content="poster.jpg">
+<link rel="icon" href="data:,">
+<title>Casa Alta</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Cormorant+Garamond:wght@500;600&family=Manrope:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Casa Alta: the film plays on a dark stage; everything around it lives on drafting paper.
+   Graphite for type, one sunset accent taken from the last frame of the film. */
+:root {
+  --night: #141311;        /* stage ground */
+  --graphite: #262421;     /* text on paper */
+  --paper: #f1ece1;        /* the sheet */
+  --paper-2: #e7e0d2;      /* raised paper */
+  --rule: #cfc6b4;         /* hairlines on paper */
+  --mist: #9a9384;         /* secondary text on paper */
+  --sun: #d9844f;          /* the one accent: sunset over the valley */
+  --sun-ink: #a85a2c;      /* accent text on paper, AA on --paper */
+  --chalk: #f4efe6;        /* text on the stage */
+  --chalk-dim: #c3bcae;
+  --display: "Cormorant Garamond", "Didot", Georgia, serif;
+  --body: "Manrope", "Avenir Next", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --hand: "Architects Daughter", "Bradley Hand", "Segoe Print", cursive;
+  color-scheme: light;
+}
+* { box-sizing: border-box; }
+html { background: var(--night); }
+body { background: var(--night); color: var(--chalk); font: 400 16px/1.6 var(--body); margin: 0; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--night); }
+
+/* ---------- stage ---------- */
+.tour { position: relative; height: 1400vh; }
+.stage { position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100vh - env(safe-area-inset-top, 0px)); height: calc(100svh - env(safe-area-inset-top, 0px)); overflow: hidden; background: var(--paper); }
+.stage video, .stage .poster { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.stage .poster { transition: opacity .6s; }
+.stage.ready .poster { opacity: 0; }
+.shade { position: absolute; inset: 0; pointer-events: none; transition: opacity .6s;
+  background: linear-gradient(to top, rgba(14,13,11,.82) 0%, rgba(14,13,11,.45) 28%, rgba(14,13,11,0) 58%),
+              linear-gradient(to bottom, rgba(14,13,11,.5) 0%, rgba(14,13,11,0) 20%); }
+.on-paper .shade { opacity: 0; }
+
+.bar { position: absolute; inset: 0 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 16px; z-index: 2;
+  padding-block: 18px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+.brand { font: 600 22px/1 var(--display); letter-spacing: .04em; color: var(--chalk); text-decoration: none; transition: color .5s; }
+.brand:hover { color: var(--sun); }
+.clock { font: 500 12px/1 var(--mono); color: var(--chalk); letter-spacing: .08em; font-variant-numeric: tabular-nums; transition: color .5s; }
+.on-paper .brand, .on-paper .clock { color: var(--graphite); }
+
+/* intro sits on the drawing, written like a note in the margin */
+.intro { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); bottom: 9%; max-width: 440px; color: var(--graphite); transition: opacity .5s, transform .5s; }
+.intro .k { font: 400 15px/1.3 var(--hand); color: var(--sun-ink); }
+.intro h1 { font: 500 clamp(64px, 10vw, 132px)/.88 var(--display); margin: 6px 0 16px; letter-spacing: -.01em; }
+.intro p { margin: 0; font-size: 16px; color: var(--graphite); max-width: 38ch; }
+.intro .facts { margin-top: 12px; font: 500 11.5px/1.5 var(--mono); color: var(--mist); letter-spacing: .1em; text-transform: uppercase; }
+.cue { margin-top: 24px; display: inline-flex; align-items: center; gap: 10px; font: 500 11.5px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--graphite); }
+.cue i { width: 1px; height: 34px; background: var(--graphite); transform-origin: top; animation: drip 1.8s ease-in-out infinite; }
+@keyframes drip { 0%{transform:scaleY(0)} 50%{transform:scaleY(1)} 100%{transform:scaleY(1);opacity:0} }
+.gone { opacity: 0; transform: translateY(-10px); pointer-events: none; }
+
+.room { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); bottom: 88px; right: 300px; max-width: 600px; transition: opacity .45s; text-shadow: 0 1px 14px rgba(0,0,0,.5); }
+.room .eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--sun); display: flex; gap: 14px; font-variant-numeric: tabular-nums; }
+.room h2 { font: 500 clamp(44px, 7vw, 92px)/.95 var(--display); margin: 10px 0 10px; text-wrap: balance; }
+.room p { margin: 0; max-width: 44ch; }
+.room .dim { display: inline-block; margin-top: 10px; font: 500 12.5px/1 var(--mono); color: var(--chalk-dim); font-variant-numeric: tabular-nums; }
+
+/* the corner map is the pencil plan itself */
+.map { position: absolute; right: max(24px, env(safe-area-inset-right, 0px)); bottom: 88px; width: 252px; padding: 10px 10px 8px; background: var(--paper); color: var(--graphite);
+  border-radius: 4px; box-shadow: 0 18px 40px -12px rgba(0,0,0,.6), 0 0 0 1px rgba(0,0,0,.08); transform: rotate(-1.2deg); transition: opacity .6s, transform .6s; }
+.map.gone { transform: rotate(-1.2deg) translateY(14px); }
+.map .hd { display: flex; justify-content: space-between; align-items: baseline; font: 400 13px/1 var(--hand); margin-bottom: 6px; }
+.map .hd b { font-weight: 400; color: var(--sun-ink); }
+.map svg { display: block; width: 100%; height: auto; }
+.zone { fill: var(--sun); opacity: 0; transition: opacity .35s; mix-blend-mode: multiply; }
+.zone.here { opacity: .26; }
+.trail { fill: none; stroke: var(--sun-ink); stroke-width: .22; stroke-dasharray: .55 .45; stroke-linecap: round; opacity: .85; }
+.dot { fill: var(--sun-ink); }
+.ring { fill: none; stroke: var(--sun-ink); stroke-width: .16; opacity: .5; }
+.cone { fill: var(--sun); opacity: .35; }
+
+.timeline { position: absolute; left: max(24px, env(safe-area-inset-left, 0px)); right: max(24px, env(safe-area-inset-right, 0px)); bottom: 38px; height: 22px; }
+.timeline .track { position: absolute; left: 0; right: 0; top: 10px; height: 1px; background: rgba(244,239,230,.28); }
+.timeline .fill { position: absolute; left: 0; top: 10px; height: 1px; background: var(--sun); width: 0; }
+.on-paper .timeline .track { background: rgba(38,36,33,.2); }
+.timeline button { position: absolute; top: 3px; width: 15px; height: 15px; margin-left: -7px; padding: 0; border: 0; background: none; cursor: pointer; }
+.timeline button::after { content: ""; position: absolute; left: 5px; top: 5px; width: 5px; height: 5px; border-radius: 50%; background: var(--chalk-dim); transition: background .2s, transform .2s; }
+.on-paper .timeline button::after { background: var(--mist); }
+.timeline button.on::after { background: var(--sun); transform: scale(1.5); }
+.timeline button:focus-visible { outline: 1px solid var(--sun); outline-offset: 2px; border-radius: 50%; }
+.timeline button span { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); white-space: nowrap; font: 500 10.5px/1 var(--mono); letter-spacing: .08em; color: var(--chalk); background: var(--night); padding: 5px 7px; border-radius: 3px; opacity: 0; pointer-events: none; transition: opacity .15s; }
+.timeline button:hover span, .timeline button:focus-visible span { opacity: 1; }
+
+/* ---------- on paper, after the film ---------- */
+.after { background: var(--paper); color: var(--graphite); padding-block: 96px 80px; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+.wrap { max-width: 1160px; margin: 0 auto; display: grid; gap: 56px; }
+.after .k { font: 400 16px/1.3 var(--hand); color: var(--sun-ink); }
+.after h3 { font: 500 clamp(40px, 5.6vw, 72px)/1 var(--display); margin: 6px 0 0; text-wrap: balance; }
+.lede { color: #5b564d; max-width: 60ch; margin: 16px 0 0; }
+.sheet { display: grid; grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); gap: 40px; align-items: start; }
+.sheet figure { margin: 0; min-width: 0; background: var(--paper-2); padding: 14px; border-radius: 3px; box-shadow: 0 1px 0 rgba(0,0,0,.05), 0 20px 50px -30px rgba(60,45,20,.45); }
+.sheet img { display: block; width: 100%; height: auto; }
+.sheet figcaption { font: 400 13px/1.4 var(--hand); color: var(--mist); margin-top: 10px; }
+.schedule { width: 100%; border-collapse: collapse; font-size: 15px; }
+.schedule caption { text-align: left; font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); padding-bottom: 12px; }
+.schedule th, .schedule td { padding: 9px 0; border-bottom: 1px solid var(--rule); text-align: left; font-weight: 400; }
+.schedule td { text-align: right; font: 500 13px/1 var(--mono); font-variant-numeric: tabular-nums; color: #4a463f; }
+.schedule tr.total th, .schedule tr.total td { border-bottom: 0; border-top: 1px solid var(--graphite); font-weight: 600; color: var(--graphite); }
+.specs { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); border-top: 1px solid var(--rule); margin: 0; }
+.specs div { padding: 18px 18px 18px 0; border-bottom: 1px solid var(--rule); }
+.specs dt { font: 500 11px/1 var(--mono); letter-spacing: .12em; text-transform: uppercase; color: var(--mist); }
+.specs dd { margin: 10px 0 0; font: 500 32px/1.05 var(--display); font-variant-numeric: tabular-nums; }
+.dl { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.btn { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--paper); background: var(--graphite); border: 0; border-radius: 3px; padding: 15px 20px; cursor: pointer; text-decoration: none; display: inline-block; }
+.btn:hover { background: var(--sun-ink); }
+.btn:focus-visible, .ghost:focus-visible { outline: 2px solid var(--sun-ink); outline-offset: 3px; }
+.ghost { font: 500 12px/1 var(--mono); letter-spacing: .14em; text-transform: uppercase; color: var(--graphite); text-decoration: none; border: 1px solid var(--graphite); border-radius: 3px; padding: 14px 18px; background: none; cursor: pointer; }
+.ghost:hover { color: var(--sun-ink); border-color: var(--sun-ink); }
+.note { font: 400 13px/1.6 var(--body); color: var(--mist); border-top: 1px solid var(--rule); padding-top: 20px; max-width: 72ch; margin: 0; }
+
+@media (max-width: 760px) {
+  .tour { height: 1200vh; }
+  .intro { bottom: 7%; right: max(24px, env(safe-area-inset-right, 0px)); }
+  .intro p { font-size: 15px; }
+  .room { right: max(24px, env(safe-area-inset-right, 0px)); bottom: 80px; }
+  .room p { font-size: 14.5px; }
+  .map { width: 150px; top: 60px; bottom: auto; padding: 6px 6px 5px; }
+  .map .hd { font-size: 11px; margin-bottom: 4px; }
+  .timeline button span { display: none; }
+  .clock { display: none; }
+  .sheet { grid-template-columns: minmax(0, 1fr); }
+  .specs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (prefers-reduced-motion: reduce) { .cue i { animation: none; } * { transition: none !important; } }
+</style>
+<script>
+// always open at the top, on the drawing, never where the last visit left off
+(function () {
+  try { history.scrollRestoration = "manual"; } catch (e) {}
+  if (location.hash) return;
+  var held = true, t0 = Date.now();
+  var release = function () { held = false; };
+  ["wheel", "touchstart", "keydown", "mousedown"].forEach(function (e) { addEventListener(e, release, { once: true, passive: true }); });
+  var hold = function () { if (held && Date.now() - t0 < 2500) { if (scrollY !== 0) scrollTo(0, 0); requestAnimationFrame(hold); } };
+  scrollTo(0, 0); requestAnimationFrame(hold);
+  addEventListener("pageshow", function (ev) { if (ev.persisted) { held = true; t0 = Date.now(); scrollTo(0, 0); requestAnimationFrame(hold); } });
+})();
+</script>
+</head>
+<body>
+
+<section class="tour" id="tour" aria-label="Casa Alta: from pencil plan to a walk through the house">
+  <div class="stage on-paper" id="stage">
+    <img class="poster" src="poster.jpg" alt="Pencil floor plan of Casa Alta on drafting paper">
+    <video id="film" src="film.mp4" muted playsinline preload="auto" aria-hidden="true"></video>
+    <div class="shade"></div>
+
+    <div class="bar">
+      <a class="brand" href="https://worldmatters.shakeapp.today/">worldmatters</a>
+      <div class="clock" id="clock">00:00 / 00:39</div>
+    </div>
+
+    <div class="intro" id="intro">
+      <div class="k">planta térrea, esc. 1:100</div>
+      <h1>Casa Alta</h1>
+      <p>A single-storey house around a courtyard pool, on the edge of a valley. Scroll and the drawing becomes the house, then walk in through the front door.</p>
+      <div class="facts">3 bedrooms + study · 500 m² · balcony over the valley</div>
+      <div class="cue"><i></i>Scroll to build it</div>
+    </div>
+
+    <div class="room gone" id="room" aria-live="polite">
+      <div class="eyebrow"><span id="roomNo">01</span><span id="roomTag"></span></div>
+      <h2 id="roomName"></h2>
+      <p id="roomText"></p>
+      <span class="dim" id="roomDim"></span>
+    </div>
+
+    <div class="map gone" id="map" aria-hidden="true">
+      <div class="hd"><span>you are here</span><b id="mapRoom">Front door</b></div>
+      <svg id="mini" viewBox="-1.5 -27.5 29 29">
+        <image href="plan-map.jpg" x="-1.5" y="-27.5" width="29" height="29" preserveAspectRatio="none"></image>
+        <g id="zones"></g>
+        <polyline class="trail" id="trail" points=""></polyline>
+        <path class="cone" id="cone"></path>
+        <circle class="ring" id="ring" r="1.1"></circle>
+        <circle class="dot" id="dot" r=".5"></circle>
+      </svg>
+    </div>
+
+    <div class="timeline" id="timeline">
+      <div class="track"></div><div class="fill" id="fill"></div>
+    </div>
+  </div>
+</section>
+
+<section class="after">
+  <div class="wrap">
+    <div>
+      <div class="k">drawn first, built second</div>
+      <h3>The house, on paper</h3>
+      <p class="lede">The film starts from this sheet. Living spaces face north over the valley, bedrooms wrap the east side, and every room opens onto the courtyard pool at the centre.</p>
+    </div>
+    <div class="sheet">
+      <figure>
+        <img src="plan-sheet.jpg" alt="Pencil floor plan of Casa Alta: garage, entry, study and guest suite along the street; kitchen and dining to the west; courtyard pool in the centre; living room and primary suite to the north, with a balcony over the valley." loading="lazy">
+        <figcaption>Casa Alta · ground floor · 1:100, drawn in graphite</figcaption>
+      </figure>
+      <table class="schedule">
+        <caption>Room schedule</caption>
+        <tbody id="schedule"></tbody>
+      </table>
+    </div>
+    <dl class="specs">
+      <div><dt>Built area</dt><dd>500 m²</dd></div>
+      <div><dt>Courtyard</dt><dd>9 × 8 m</dd></div>
+      <div><dt>Pool</dt><dd>5.2 × 3.6 m</dd></div>
+      <div><dt>Balcony</dt><dd>11 × 3.6 m</dd></div>
+      <div><dt>Bedrooms</dt><dd>3 + study</dd></div>
+      <div><dt>Ceiling</dt><dd>3.4 m</dd></div>
+      <div><dt>Footprint</dt><dd>26 × 22 m</dd></div>
+      <div><dt>Floors</dt><dd>1</dd></div>
+    </dl>
+    <div class="dl">
+      <a class="btn" href="casa-alta-plan.jpg" target="_blank" rel="noopener">Open the full pencil plan</a>
+      <button class="ghost" id="again" type="button">Watch it build again</button>
+    </div>
+    <p class="note">Concept design by worldmatters. The opening is rendered from the 3D model of this exact plan; the walk-through is a photoreal pass over the same model, so the map in the corner shows where the camera really is. Finishes, furniture, people and landscape are indicative.</p>
+  </div>
+</section>
+
+<script>
+/* ---------- data from the 3D model ---------- */
+// CAM: one entry every 2 frames: [x, y, heading°] in plan metres (x east, y north)
+const CAM = [[13.0,11.0,0.0],[13.0,10.99,70.5],[12.99,11.0,23.0],[12.98,11.01,-20.4],[12.97,11.02,-37.5],[12.95,11.05,-45.1],[12.93,11.07,-49.2],[12.91,11.11,-51.7],[12.88,11.15,-53.4],[12.86,11.19,-54.6],[12.83,11.23,-55.4],[12.81,11.27,-56.1],[12.78,11.32,-56.6],[12.75,11.36,-57.0],[12.72,11.41,-57.3],[12.7,11.45,-57.5],[12.67,11.49,-57.6],[12.65,11.53,-57.7],[12.62,11.56,-57.7],[12.61,11.59,-57.7],[12.59,11.61,-57.6],[12.57,11.63,-57.5],[12.56,11.64,-57.3],[12.56,11.64,-57.0],[12.56,11.64,-56.6],[12.56,11.62,-56.1],[12.57,11.59,-55.4],[12.58,11.56,-54.6],[12.6,11.51,-53.4],[12.62,11.45,-51.7],[12.65,11.37,-49.2],[12.69,11.28,-45.1],[12.74,11.18,-37.5],[12.79,11.06,-20.4],[12.85,10.92,23.0],[12.92,10.77,70.5],[13.0,10.6,90.0],[13.08,10.41,97.9],[13.16,10.21,101.4],[13.24,9.99,103.2],[13.32,9.76,104.1],[13.4,9.51,104.6],[13.48,9.25,104.9],[13.57,8.98,105.0],[13.65,8.69,105.1],[13.74,8.4,105.1],[13.83,8.09,105.2],[13.92,7.77,105.2],[14.02,7.44,105.2],[14.12,7.11,105.3],[14.22,6.76,105.4],[14.34,6.41,105.5],[14.45,6.05,105.6],[14.58,5.68,105.8],[14.71,5.3,106.0],[14.85,4.92,106.2],[15.0,4.53,106.4],[15.16,4.14,106.7],[15.33,3.74,107.0],[15.51,3.34,107.3],[15.7,2.93,107.7],[15.9,2.53,108.1],[16.11,2.12,108.5],[16.33,1.7,108.9],[16.57,1.29,109.4],[16.82,0.88,109.8],[17.09,0.46,110.4],[17.37,0.05,110.9],[17.66,-0.37,111.5],[17.97,-0.78,112.0],[18.3,-1.19,112.7],[18.64,-1.6,113.3],[19.0,-2.0,114.0],[19.4,-2.41,114.7],[19.85,-2.84,115.5],[20.36,-3.29,116.4],[20.91,-3.75,117.3],[21.5,-4.23,118.2],[22.13,-4.71,119.1],[22.79,-5.21,120.0],[23.48,-5.72,120.9],[24.19,-6.23,121.8],[24.92,-6.74,122.6],[25.67,-7.27,123.4],[26.42,-7.79,124.2],[27.17,-8.31,124.9],[27.93,-8.83,125.5],[28.67,-9.35,126.1],[29.41,-9.87,126.7],[30.13,-10.37,127.3],[30.84,-10.88,127.7],[31.51,-11.37,128.2],[32.16,-11.85,128.6],[32.78,-12.31,129.0],[33.35,-12.77,129.3],[33.88,-13.21,129.6],[34.37,-13.63,129.8],[34.8,-14.03,130.0],[35.17,-14.41,130.2],[35.48,-14.77,130.3],[35.73,-15.11,130.4],[35.9,-15.42,130.5],[35.99,-15.7,130.5],[36.01,-15.95,130.4],[35.94,-16.18,130.4],[35.8,-16.41,130.2],[35.58,-16.62,130.1],[35.3,-16.82,129.9],[34.96,-17.01,129.7],[34.56,-17.2,129.4],[34.1,-17.37,129.1],[33.6,-17.52,128.8],[33.05,-17.67,128.4],[32.45,-17.8,128.1],[31.83,-17.92,127.6],[31.17,-18.02,127.2],[30.48,-18.11,126.7],[29.76,-18.18,126.2],[29.03,-18.24,125.6],[28.28,-18.28,125.0],[27.52,-18.3,124.3],[26.75,-18.3,123.7],[25.97,-18.29,122.9],[25.2,-18.25,122.2],[24.44,-18.2,121.4],[23.68,-18.13,120.6],[22.94,-18.03,119.7],[22.21,-17.92,118.8],[21.51,-17.78,117.9],[20.83,-17.62,117.0],[20.18,-17.44,116.1],[19.57,-17.23,115.1],[19.0,-17.0,114.2],[18.44,-16.73,113.3],[17.87,-16.43,112.2],[17.28,-16.08,111.1],[16.69,-15.71,109.9],[16.1,-15.3,108.7],[15.51,-14.88,107.4],[14.91,-14.43,106.0],[14.33,-13.97,104.5],[13.75,-13.49,103.1],[13.19,-13.02,101.5],[12.64,-12.54,100.0],[12.11,-12.06,98.5],[11.6,-11.59,96.9],[11.12,-11.13,95.4],[10.66,-10.69,93.9],[10.24,-10.26,92.5],[9.85,-9.87,91.2],[9.5,-9.5,90.0],[9.19,-9.15,88.9],[8.93,-8.82,87.9],[8.7,-8.5,87.1],[8.51,-8.18,86.4],[8.35,-7.88,85.8],[8.23,-7.59,85.3],[8.14,-7.3,85.0],[8.08,-7.03,84.7],[8.04,-6.76,84.6],[8.03,-6.5,84.5],[8.04,-6.25,84.5],[8.07,-6.0,84.6],[8.12,-5.76,84.8],[8.18,-5.53,85.0],[8.26,-5.3,85.3],[8.35,-5.07,85.6],[8.44,-4.85,86.0],[8.54,-4.64,86.4],[8.65,-4.43,86.8],[8.76,-4.22,87.2],[8.87,-4.01,87.7],[8.98,-3.81,88.1],[9.08,-3.61,88.5],[9.18,-3.41,88.8],[9.27,-3.21,89.1],[9.34,-3.01,89.3],[9.41,-2.81,89.5],[9.46,-2.6,89.6],[9.49,-2.4,89.6],[9.5,-2.2,89.5],[9.5,-2.0,89.4],[9.5,-1.8,89.2],[9.5,-1.62,88.9],[9.49,-1.43,88.7],[9.49,-1.25,88.4],[9.48,-1.08,88.1],[9.47,-0.91,87.7],[9.47,-0.74,87.4],[9.46,-0.57,87.0],[9.45,-0.41,86.7],[9.45,-0.24,86.3],[9.45,-0.08,85.9],[9.45,0.09,85.6],[9.45,0.25,85.2],[9.45,0.42,84.9],[9.45,0.59,84.6],[9.46,0.76,84.2],[9.47,0.93,84.0],[9.49,1.11,83.7],[9.51,1.3,83.5],[9.53,1.48,83.2],[9.56,1.68,83.1],[9.6,1.88,83.0],[9.64,2.08,83.0],[9.69,2.29,83.1],[9.74,2.5,83.2],[9.8,2.72,83.4],[9.86,2.94,83.7],[9.93,3.16,83.9],[9.99,3.38,84.2],[10.06,3.6,84.5],[10.13,3.83,84.8],[10.2,4.05,85.1],[10.27,4.27,85.4],[10.34,4.5,85.6],[10.41,4.72,85.8],[10.47,4.93,85.9],[10.53,5.15,85.9],[10.58,5.36,85.8],[10.63,5.57,85.6],[10.68,5.77,85.2],[10.71,5.97,84.7],[10.74,6.16,84.0],[10.77,6.35,82.9],[10.79,6.53,81.3],[10.8,6.71,79.1],[10.81,6.89,76.4],[10.81,7.07,73.2],[10.82,7.24,69.7],[10.82,7.41,65.9],[10.81,7.57,61.9],[10.81,7.74,57.8],[10.8,7.9,53.7],[10.79,8.06,49.8],[10.78,8.22,46.2],[10.77,8.38,42.9],[10.75,8.54,40.0],[10.74,8.7,37.5],[10.73,8.86,35.4],[10.72,9.02,33.9],[10.71,9.18,33.0],[10.7,9.34,32.7],[10.7,9.5,33.3],[10.69,9.66,35.1],[10.69,9.82,38.4],[10.7,9.99,43.6],[10.7,10.16,51.8],[10.7,10.32,63.9],[10.7,10.49,80.7],[10.7,10.65,100.3],[10.7,10.81,118.3],[10.7,10.97,132.0],[10.69,11.12,141.5],[10.67,11.27,148.2],[10.65,11.41,153.0],[10.63,11.55,156.5],[10.59,11.68,159.3],[10.55,11.8,161.4],[10.5,11.92,163.4],[10.44,12.03,165.2],[10.38,12.13,167.1],[10.31,12.24,168.9],[10.23,12.33,170.8],[10.15,12.43,172.6],[10.06,12.52,174.5],[9.97,12.6,176.3],[9.87,12.68,178.1],[9.77,12.76,179.9],[9.67,12.83,-178.3],[9.56,12.89,-176.6],[9.45,12.95,-175.1],[9.34,13.01,-173.6],[9.23,13.06,-172.3],[9.11,13.11,-171.2],[9.0,13.15,-170.4],[8.88,13.18,-169.8],[8.76,13.21,-169.6],[8.65,13.24,-169.8],[8.53,13.26,-170.5],[8.4,13.26,-171.7],[8.27,13.25,-173.6],[8.13,13.22,-176.0],[7.99,13.19,-179.0],[7.84,13.14,177.4],[7.68,13.09,173.2],[7.53,13.02,168.6],[7.37,12.96,163.5],[7.21,12.89,158.0],[7.05,12.83,152.4],[6.9,12.76,146.8],[6.74,12.7,141.2],[6.59,12.64,135.9],[6.44,12.59,130.9],[6.3,12.55,126.3],[6.16,12.52,122.1],[6.03,12.5,118.3],[5.91,12.5,114.8],[5.8,12.51,111.7],[5.69,12.55,108.8],[5.6,12.6,106.2],[5.51,12.67,103.6],[5.43,12.76,100.9],[5.34,12.87,98.1],[5.26,12.99,95.1],[5.18,13.12,92.0],[5.1,13.27,88.6],[5.03,13.42,85.1],[4.96,13.59,81.3],[4.9,13.76,77.3],[4.84,13.94,73.2],[4.79,14.12,68.9],[4.75,14.31,64.6],[4.71,14.5,60.3],[4.68,14.69,56.0],[4.66,14.87,51.9],[4.65,15.06,48.0],[4.65,15.24,44.3],[4.66,15.42,41.0],[4.69,15.59,38.1],[4.72,15.76,35.5],[4.77,15.91,33.4],[4.83,16.06,31.6],[4.9,16.2,30.1],[5.0,16.35,28.8],[5.11,16.5,27.5],[5.24,16.65,26.4],[5.38,16.8,25.4],[5.54,16.95,24.5],[5.7,17.1,23.7],[5.88,17.25,23.0],[6.06,17.4,22.3],[6.24,17.54,21.7],[6.43,17.68,21.1],[6.62,17.82,20.6],[6.82,17.95,20.1],[7.01,18.08,19.6],[7.19,18.2,19.2],[7.38,18.32,18.8],[7.56,18.42,18.5],[7.73,18.53,18.2],[7.89,18.62,17.9],[8.04,18.71,17.6],[8.17,18.79,17.3],[8.3,18.85,17.1],[8.42,18.91,16.9],[8.54,18.96,16.8],[8.65,19.0,16.8],[8.76,19.03,16.9],[8.86,19.05,17.1],[8.96,19.07,17.3],[9.06,19.08,17.6],[9.15,19.08,17.9],[9.25,19.08,18.3],[9.34,19.08,18.8],[9.42,19.07,19.3],[9.51,19.07,19.9],[9.6,19.05,20.5],[9.69,19.04,21.2],[9.77,19.03,21.9],[9.86,19.02,22.6],[9.94,19.01,23.4],[10.03,19.0,24.2],[10.12,18.99,25.0],[10.21,18.99,25.8],[10.3,18.99,26.5],[10.4,19.0,27.3],[13.61,20.45,100.8],[13.62,20.51,100.9],[13.63,20.57,101.1],[13.64,20.64,101.2],[13.65,20.7,101.3],[13.66,20.77,101.4],[13.66,20.83,101.5],[13.67,20.9,101.6],[13.68,20.96,101.7],[13.69,21.03,101.7],[13.7,21.09,101.8],[13.7,21.16,101.9],[13.71,21.23,101.9],[13.72,21.29,102.0],[13.73,21.36,102.0],[13.73,21.42,102.1],[13.74,21.49,102.2],[13.75,21.55,102.2],[13.76,21.62,102.3],[13.77,21.68,102.4],[13.78,21.75,102.4],[13.79,21.81,102.5],[13.8,21.87,102.6],[13.81,21.94,102.7],[13.82,22.0,102.8],[13.83,22.06,102.9],[13.84,22.12,103.1],[13.86,22.18,103.2],[13.87,22.23,103.3],[13.89,22.29,103.5],[13.9,22.34,103.6],[13.92,22.4,103.8],[13.94,22.45,104.0],[13.96,22.5,104.1],[13.98,22.55,104.3],[14.0,22.6,104.5],[14.02,22.65,104.7],[14.05,22.69,104.9],[14.07,22.74,105.1],[14.1,22.78,105.3],[14.13,22.82,105.4],[14.16,22.86,105.6],[14.19,22.9,105.8],[14.22,22.94,106.0],[14.25,22.98,106.1],[14.29,23.02,106.3],[14.32,23.05,106.5],[14.36,23.09,106.6],[14.39,23.13,106.8],[14.43,23.16,106.9],[14.46,23.19,107.1],[14.5,23.23,107.2],[14.54,23.26,107.4],[14.58,23.29,107.5],[14.61,23.32,107.7],[14.65,23.35,107.8],[14.69,23.38,108.0],[14.73,23.41,108.1],[14.76,23.44,108.2],[14.8,23.47,108.4],[14.84,23.5,108.5],[14.87,23.52,108.7],[14.91,23.55,108.8],[14.94,23.58,108.9],[14.98,23.61,109.1],[15.01,23.63,109.2],[15.05,23.66,109.3],[15.08,23.69,109.5],[15.11,23.72,109.6],[15.14,23.74,109.8],[15.17,23.77,109.9],[15.2,23.8,110.0],[15.23,23.83,110.2],[15.25,23.85,110.3],[15.28,23.88,110.5],[15.31,23.91,110.6],[15.33,23.93,110.8],[15.36,23.96,110.9],[15.38,23.98,111.1],[15.4,24.0,111.3],[15.43,24.03,111.4],[15.45,24.05,111.6],[15.47,24.07,111.7],[15.5,24.1,111.9],[15.52,24.12,112.1],[15.54,24.14,112.2],[15.56,24.16,112.4],[15.58,24.18,112.5],[15.6,24.2,112.7],[15.62,24.23,112.8],[15.65,24.25,113.0],[15.67,24.27,113.1],[15.69,24.29,113.3],[15.71,24.31,113.4],[15.73,24.33,113.6],[15.75,24.35,113.7],[15.77,24.37,113.8],[15.79,24.39,114.0],[15.81,24.41,114.1],[15.83,24.43,114.2],[15.85,24.45,114.3],[15.87,24.47,114.5],[15.89,24.49,114.6],[15.91,24.51,114.7],[15.93,24.53,114.8],[15.96,24.56,114.9],[15.98,24.58,115.0],[16.0,24.6,115.1]];
+const FPS = 24, CAMSTEP = 2;
+// the film follows the model's timeline; after the cut to the balcony a 0.5 s dissolve shortens it
+const CUT_B = 30.5, XC = 0.5;
+const toModel = t => (t < CUT_B - XC ? t : t + XC);
+const toFilm = b => (b < CUT_B ? b : b - XC);
+
+const ROOMS = [["Garage",0,0,7,7],["Entry",7,0,12,7],["Study",12,0,18,7],["Guest suite",18,0,26,7],["Kitchen",0,7,9,15],["Courtyard",9,7,18,15],["Bedroom",18,7,26,11],["Bath",18,11,26,15],["Dining",0,15,9,22],["Living",9,15,18,22],["Primary suite",18,15,26,22],["Balcony",8,22,19,25.6]];
+const STOPS = [
+  { t: 0.0,  name: "The plan",   tag: "Graphite on paper", zone: "", text: "Every wall, door and window drawn by hand at 1:100. Keep scrolling and it rises.", dim: "26 × 22 m" },
+  { t: 6.2,  name: "Casa Alta",  tag: "The whole house", zone: "", text: "One floor, wrapped around a courtyard pool, standing right on the edge of the valley.", dim: "500 m² built" },
+  { t: 12.0, name: "Front door", tag: "Street side", zone: "Entry", text: "An oak pivot door between a board-formed concrete wall and an oak slat screen.", dim: "Door 1.8 × 3.0 m" },
+  { t: 16.4, name: "Entry",      tag: "Ground floor", zone: "Entry", text: "From the door you already see straight through the glass to the courtyard and the pool.", dim: "5 × 7 m" },
+  { t: 19.6, name: "Courtyard",  tag: "Open to the sky", zone: "Courtyard", text: "The centre of the house: a plunge pool, an old olive tree and glass on all four sides.", dim: "9 × 8 m · pool 5.2 × 3.6 m" },
+  { t: 22.8, name: "Kitchen",    tag: "Ground floor", zone: "Kitchen", text: "A long run along the wall, a walnut island with three stools and pendants over it.", dim: "9 × 8 m" },
+  { t: 26.2, name: "Dining",     tag: "Ground floor", zone: "Dining", text: "A table for eight in front of a seven-metre window onto the valley.", dim: "9 × 7 m" },
+  { t: 28.2, name: "Living",     tag: "Ground floor", zone: "Living", text: "Friends over for a toast, with the whole north wall in glass and the valley beyond.", dim: "9 × 7 m" },
+  { t: 30.0, name: "Balcony",    tag: "Later, at sunset", zone: "Balcony", text: "The glass slides away and the balcony hangs out over the slope. The sun goes down behind the far ridge.", dim: "11 × 3.6 m" },
+];
+STOPS.forEach(s => s.ft = toFilm(s.t));
+const MAP_FROM = 7.5;      // the map card appears once the house has risen
+const DOT_FROM = 11.0;     // and the dot once the camera reaches the street
+
+/* ---------- room schedule ---------- */
+const PT = { "Garage": "Garage", "Entry": "Entry", "Study": "Study", "Guest suite": "Guest suite", "Kitchen": "Kitchen", "Courtyard": "Courtyard",
+  "Bedroom": "Bedroom", "Bath": "Primary bath", "Dining": "Dining", "Living": "Living", "Primary suite": "Primary suite", "Balcony": "Balcony" };
+(() => {
+  const tb = document.getElementById("schedule"); let tot = 0;
+  ROOMS.forEach(([n, x0, y0, x1, y1]) => {
+    const a = (x1 - x0) * (y1 - y0); if (n !== "Courtyard" && n !== "Balcony") tot += a;
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<th scope="row"></th><td>${a.toFixed(1)} m²</td>`; tr.firstChild.textContent = PT[n] || n; tb.appendChild(tr);
+  });
+  const tr = document.createElement("tr"); tr.className = "total";
+  tr.innerHTML = `<th scope="row">Interior, total</th><td>${tot.toFixed(1)} m²</td>`; tb.appendChild(tr);
+})();
+
+/* ---------- map ---------- */
+const NS = "http://www.w3.org/2000/svg";
+const zonesG = document.getElementById("zones"), zoneEl = {};
+ROOMS.forEach(([n, x0, y0, x1, y1]) => {
+  const r = document.createElementNS(NS, "rect");
+  r.setAttribute("x", x0); r.setAttribute("y", -y1); r.setAttribute("width", x1 - x0); r.setAttribute("height", y1 - y0);
+  r.setAttribute("class", "zone"); zonesG.appendChild(r); zoneEl[n] = r;
+});
+const dot = document.getElementById("dot"), ring = document.getElementById("ring"), cone = document.getElementById("cone"), trail = document.getElementById("trail");
+const mapEl = document.getElementById("map"), mapRoom = document.getElementById("mapRoom");
+const camAt = b => {                     // interpolated camera at model time b (seconds)
+  const f = b * FPS / CAMSTEP, i = Math.max(0, Math.min(CAM.length - 2, Math.floor(f))), u = Math.min(1, Math.max(0, f - i));
+  const p = CAM[i], q = CAM[i + 1];
+  let dh = q[2] - p[2]; if (dh > 180) dh -= 360; if (dh < -180) dh += 360;
+  return [p[0] + (q[0] - p[0]) * u, p[1] + (q[1] - p[1]) * u, p[2] + dh * u];
+};
+
+/* ---------- timeline ---------- */
+const tl = document.getElementById("timeline");
+let duration = 39.0;
+const ticks = STOPS.map(s => {
+  const b = document.createElement("button"); b.type = "button";
+  b.setAttribute("aria-label", "Jump to " + s.name);
+  b.innerHTML = "<span></span>"; b.firstChild.textContent = s.name;
+  b.addEventListener("click", () => scrollToTime(s.ft + 0.5));
+  tl.appendChild(b); return b;
+});
+const placeTicks = () => ticks.forEach((b, i) => b.style.left = (STOPS[i].ft / duration * 100) + "%");
+placeTicks();
+
+/* ---------- scrubbing ---------- */
+const tour = document.getElementById("tour"), stage = document.getElementById("stage"), film = document.getElementById("film");
+const intro = document.getElementById("intro"), room = document.getElementById("room");
+const fill = document.getElementById("fill"), clock = document.getElementById("clock");
+let cur = 0, shown = -1, trailFrom = -1;
+
+film.addEventListener("loadeddata", () => stage.classList.add("ready"));
+film.addEventListener("loadedmetadata", () => { if (isFinite(film.duration) && film.duration > 1) { duration = film.duration; placeTicks(); } });
+// iOS only decodes frames for seeking after the video has been played once by a gesture
+const unlock = () => { const p = film.play(); if (p) p.then(() => film.pause()).catch(() => {}); };
+window.addEventListener("touchstart", unlock, { once: true, passive: true });
+window.addEventListener("pointerdown", unlock, { once: true });
+
+const span = () => tour.offsetHeight - stage.offsetHeight;
+const progress = () => Math.min(1, Math.max(0, -tour.getBoundingClientRect().top / span()));
+function scrollToTime(t) {
+  window.scrollTo({ top: tour.offsetTop + span() * Math.min(1, t / duration), behavior: matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth" });
+}
+document.getElementById("again").addEventListener("click", () => scrollToTime(0));
+const mmss = s => String(Math.floor(s / 60)).padStart(2, "0") + ":" + String(Math.floor(s % 60)).padStart(2, "0");
+
+function trailTo(b) {
+  // the path walked so far, from the street to here (stops at the cut so the balcony starts fresh)
+  const start = b >= CUT_B ? CUT_B : DOT_FROM;
+  const i0 = Math.round(start * FPS / CAMSTEP), i1 = Math.round(b * FPS / CAMSTEP);
+  const key = i0 * 10000 + i1;
+  if (key === trailFrom) return; trailFrom = key;
+  const pts = [];
+  for (let i = i0; i <= i1 && i < CAM.length; i += 2) pts.push(CAM[i][0].toFixed(2) + "," + (-CAM[i][1]).toFixed(2));
+  trail.setAttribute("points", pts.join(" "));
+}
+
+function render() {
+  const target = progress() * duration;
+  cur += (target - cur) * 0.16;
+  if (Math.abs(target - cur) < 0.002) cur = target;
+  if (film.readyState >= 1 && !film.seeking && Math.abs(film.currentTime - cur) > 0.015) film.currentTime = Math.min(cur, duration - 0.05);
+  fill.style.width = (cur / duration * 100) + "%";
+  clock.textContent = mmss(cur) + " / " + mmss(duration);
+
+  const b = toModel(cur);
+  stage.classList.toggle("on-paper", b < 4.6);
+  intro.classList.toggle("gone", b > 1.4);
+  room.classList.toggle("gone", b <= 1.4);
+  mapEl.classList.toggle("gone", b < MAP_FROM);
+
+  let idx = 0;
+  for (let i = 0; i < STOPS.length; i++) if (cur >= STOPS[i].ft - 0.3) idx = i;
+  if (idx !== shown) {
+    shown = idx;
+    const S = STOPS[idx];
+    document.getElementById("roomNo").textContent = String(idx + 1).padStart(2, "0") + " / " + String(STOPS.length).padStart(2, "0");
+    document.getElementById("roomTag").textContent = S.tag;
+    document.getElementById("roomName").textContent = S.name;
+    document.getElementById("roomText").textContent = S.text;
+    document.getElementById("roomDim").textContent = S.dim;
+    ticks.forEach((t, i) => t.classList.toggle("on", i === idx));
+  }
+
+  // where the camera is on the plan, which room it is in
+  const [x, y, h] = camAt(b);
+  const seen = b >= DOT_FROM;
+  dot.style.opacity = ring.style.opacity = cone.style.opacity = trail.style.opacity = seen ? "" : 0;
+  const cx = Math.min(27, Math.max(-1, x)), cy = -Math.min(27, Math.max(-1.2, y));
+  dot.setAttribute("cx", cx); dot.setAttribute("cy", cy); ring.setAttribute("cx", cx); ring.setAttribute("cy", cy);
+  const a = -h * Math.PI / 180, s = 0.5, L = 4.6;   // svg y points down, so the heading flips
+  cone.setAttribute("d", `M${cx},${cy} L${cx + L * Math.cos(a - s)},${cy + L * Math.sin(a - s)} L${cx + L * Math.cos(a + s)},${cy + L * Math.sin(a + s)} Z`);
+  if (seen) trailTo(b);
+  let inRoom = "Front garden";
+  for (const [n, x0, y0, x1, y1] of ROOMS) if (x >= x0 && x <= x1 && y >= y0 && y <= y1) inRoom = n;
+  if (y < 0) inRoom = "Front door";
+  for (const k in zoneEl) zoneEl[k].classList.toggle("here", k === inRoom);
+  mapRoom.textContent = seen ? (PT[inRoom] || inRoom) : "The house";
+
+  requestAnimationFrame(render);
+}
+requestAnimationFrame(render);
+</script>
+</body>
+</html>
